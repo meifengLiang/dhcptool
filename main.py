@@ -7,6 +7,9 @@
 import argparse
 import logging
 
+from dhcp4_controller import Dhcp4Controller
+from dhcp6_controller import Dhcp6Controller
+
 parser = argparse.ArgumentParser(description="DHCP发包,同时支持ipv4,ipv6", conflict_handler='resolve')
 subparsers = parser.add_subparsers(help='help帮助信息')
 subparsers_4 = subparsers.add_parser('v4', help='DHCP4 发包帮助信息')
@@ -58,9 +61,11 @@ def dhcp_main():
     args = vars(parser.parse_args())
     dhcp_server = args.get('dhcp_server')
     if dhcp_server is None:
-        pass
+        dhcp6_controldler = Dhcp6Controller(args)
+        dhcp6_controldler.run()
     else:
-        pass
+        dhcp4_controller = Dhcp4Controller(args)
+        dhcp4_controller.run()
 
 
 if __name__ == '__main__':

@@ -7,5 +7,8 @@
 
 class Dhcp4Controller:
 
-    def __init__(self):
+    def __init__(self, args):
+        self.args = args
+
+    def run(self):
         pass
