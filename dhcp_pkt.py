@@ -22,6 +22,15 @@ class Dhcp6Pkt(Pkt):
     def dhcp6_solicit(self):
         pass
 
+    def dhcp6_advertise(self):
+        pass
+
+    def dhcp6_request(self):
+        pass
+
+    def dhcp6_reply(self):
+        pass
+
 
 class Dhcp4Pkt(Pkt):
 
@@ -29,4 +38,13 @@ class Dhcp4Pkt(Pkt):
         super(Dhcp4Pkt, self).__init__()
 
     def dhcp4_discover(self):
+        pass
+
+    def dhcp4_offer(self):
+        pass
+
+    def dhcp4_request(self):
+        pass
+
+    def dhcp4_ack(self):
         pass
