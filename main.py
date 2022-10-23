@@ -6,7 +6,7 @@
 # @desc    : dhcp 命令行接受，本工具为循环发包，未考虑实现并发
 import argparse
 import logging
-
+logging.basicConfig(level=logging.DEBUG)
 from dhcp4_controller import Dhcp4Controller
 from dhcp6_controller import Dhcp6Controller
 
@@ -59,6 +59,7 @@ def dhcp_main():
     parse_cmd_args_dhcp4()
     parse_cmd_args_dhcp6()
     args = vars(parser.parse_args())
+    logging.debug(f"解析命令行:\t{args}")
     dhcp_server = args.get('dhcp_server')
     if dhcp_server is None:
         dhcp6_controldler = Dhcp6Controller(args)

@@ -4,6 +4,8 @@
 # @File    : dhcp_pkt.py
 # @Software: PyCharm
 # @desc    :
+import logging
+
 from scapy.layers.dhcp6 import DHCP6_Solicit, DHCP6_Release, DHCP6OptClientId, DHCP6OptIA_NA, DHCP6OptIA_PD, \
     DHCP6_Request, DHCP6OptServerId, DHCP6_RelayForward, DUID_LLT
 from scapy.layers.inet import UDP
@@ -43,7 +45,7 @@ class Dhcp6Pkt(Pkt):
         self.relay_forward = DHCP6_RelayForward(linkaddr=filter)
 
     def dhcp6_solicit(self):
-        pass
+        logging.debug('生产solicit包')
 
     def dhcp6_advertise(self):
         pass

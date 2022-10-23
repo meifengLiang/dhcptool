@@ -1,0 +1,4 @@
+2022-10-23 20:18:34 - root - INFO      - fdss.py  : 19 line - This is  INFO !!
+2022-10-23 20:18:34 - root - WARNING   - fdss.py  : 20 line - This is  WARNING !!
+2022-10-23 20:18:34 - root - ERROR     - fdss.py  : 21 line - This is  ERROR !!
+2022-10-23 20:18:34 - root - CRITICAL  - fdss.py  : 22 line - This is  CRITICAL !!
