@@ -21,3 +21,5 @@ random_mac = RandMAC()
 # 获取本机ipv6
 ipv6_src = subprocess.Popen("ip -6 address show | grep inet6 | awk '{print $2}' | cut -d'/' -f1",
                             shell=True, stdout=subprocess.PIPE)
+
+summary_result = {}
