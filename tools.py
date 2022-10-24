@@ -7,11 +7,8 @@
 import logging
 import socket
 import subprocess
-from functools import wraps
-
 from scapy.layers.inet6 import IPv6
-
-from env_args import pkt_result
+from env_args import pkt_result, logs
 
 
 class Tools:
@@ -57,11 +54,11 @@ class Tools:
         """
         for i in pkts_list:
             if i[IPv6].src == filter and i[DHCPv6].msgtype == 2:
-                i.show()
+                # i.show()
                 pkt_result.get('dhcp6_advertise').put(i)
 
             elif i[IPv6].src == filter and i[DHCPv6].msgtype == 7:
-                i.show()
+                # i.show()
                 pkt_result.get('dhcp6_reply').put(i)
 
             else:
@@ -69,14 +66,14 @@ class Tools:
                 # self.send_dhcp6_pkt(pkt)
 
     @staticmethod
-    def print_formart(pkt, level=0):
+    def print_formart(pkt, level='off'):
         """
         格式化打印
         :param pkt:
         :param level:
         :return:
         """
-        if level == 0:
-            pkt.summary()
+        if level == 'off':
+            logs.debug(pkt.summary())
         else:
-            pkt.show()
+            logs.debug(str(pkt.show()))

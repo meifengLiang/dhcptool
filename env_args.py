@@ -10,6 +10,8 @@ import subprocess
 import uuid
 from scapy.volatile import RandMAC
 
+from Logings import Logings
+
 # 本机mac
 address = ':'.join(hex(uuid.getnode())[2:][i:i + 2] for i in range(0, len(hex(uuid.getnode())[2:]), 2))
 
@@ -30,3 +32,4 @@ pkt_result = {
     "dhcp6_reply": queue.Queue()
 }
 
+logs = Logings()

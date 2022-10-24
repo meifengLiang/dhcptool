@@ -5,14 +5,9 @@
 # @Software: PyCharm
 # @desc    : dhcp 命令行接受，本工具为循环发包，未考虑实现并发
 import argparse
-import logging
-
-from env_args import ipv6_src
-
-logging.basicConfig(level=logging.DEBUG)
+from env_args import ipv6_src, logs
 from dhcp4_controller import Dhcp4Controller
 from dhcp6_controller import Dhcp6Controller
-
 parser = argparse.ArgumentParser(description="DHCP发包,同时支持ipv4,ipv6", conflict_handler='resolve')
 subparsers = parser.add_subparsers(help='help帮助信息')
 subparsers_4 = subparsers.add_parser('v4', help='DHCP4 发包帮助信息')
@@ -46,7 +41,7 @@ def parse_cmd_args_dhcp6():
     subparsers_6.add_argument("--message_type", "-mt", help='发送指定类型报文如：solicit,request,renew',
                               default='default')
     subparsers_6.add_argument("--na_pd", "-np", help='0:前缀模式, 1:后缀模式, 2:前+后缀模式', default=0)
-    subparsers_6.add_argument("--show", "-show", help='查看详细请求过程,默认为 0/False, 1/True', default=0)
+    subparsers_6.add_argument("--debug", "-debug", help='查看详细请求过程,默认为 off, on', type=str, default='off')
     subparsers_6.add_argument("--file_path", "-fp", help='指定pcap文件,目前与rennew搭配使用', default=None)
     subparsers_6.add_argument("--data", "-d", help='自定义入参', default=None)
     subparsers_6.add_argument("--mac", "-mac", help='指定mac地址进行发流', default="8e:d0:0d:86:c9:9a")
@@ -62,7 +57,8 @@ def dhcp_main():
     parse_cmd_args_dhcp4()
     parse_cmd_args_dhcp6()
     args = vars(parser.parse_args())
-    logging.debug(f"解析命令行:\t{args}")
+    logs.debug(f"解析命令行:\t{args}")
+
     dhcp_server = args.get('dhcp_server')
     if dhcp_server is None:
         dhcp6_controldler = Dhcp6Controller(args)

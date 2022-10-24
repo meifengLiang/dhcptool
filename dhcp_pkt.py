@@ -4,15 +4,15 @@
 # @File    : dhcp_pkt.py
 # @Software: PyCharm
 # @desc    :
-import logging
+
 from time import sleep
 
+from loguru import logger
 from scapy.layers.dhcp6 import DHCP6_Solicit, DHCP6_Release, DHCP6OptClientId, DHCP6OptIA_NA, DHCP6OptIA_PD, \
-    DHCP6_Request, DHCP6OptServerId, DHCP6_RelayForward, DUID_LLT, DHCP6OptRelayMsg, DHCP6
+    DHCP6_Request, DHCP6OptServerId, DHCP6_RelayForward, DUID_LLT
 from scapy.layers.inet import UDP
 from scapy.layers.inet6 import IPv6
 from scapy.layers.l2 import Ether
-from scapy.packet import Packet
 from scapy.sendrecv import sendp, srp1, AsyncSniffer
 from scapy.utils import mac2str
 
@@ -32,7 +32,7 @@ class Pkt:
         t = AsyncSniffer(iface="eth0", filter=f'port 547 and host {filter}')
         t.start()
         sleep(50 / 1000)
-        sendp(pkt)
+        sendp(pkt, verbose=0)
         t.stop()
         return t.results
 
@@ -58,17 +58,17 @@ class Dhcp6Pkt(Pkt):
         self.relay_forward = DHCP6_RelayForward(linkaddr=filter)
 
     def dhcp6_solicit(self):
-        logging.debug('生产solicit包')
+        logger.debug('生产solicit包')
         solicit_pkt = self.ether_ipv6_udp / self.solicit / self.opt_client_id / self.opt_ia_na
-        solicit_pkt.summary()
-        # Tools.print_formart(solicit_pkt, self.args)
+
+        Tools.print_formart(solicit_pkt, self.args.get('debug'))
         return solicit_pkt
 
     def dhcp6_advertise(self):
         pass
 
     def dhcp6_request(self):
-        logging.debug('生产request包')
+        logger.debug('生产request包')
         advertise_pkt = pkt_result.get('dhcp6_advertise').get()
         opt_client_id = advertise_pkt[DHCP6OptClientId]
         request_pkt = self.ether_ipv6_udp / self.request / opt_client_id
@@ -79,7 +79,7 @@ class Dhcp6Pkt(Pkt):
         pass
 
     def dhcp6_relay_forward(self):
-        logging.debug('生产relay forward包')
+        logger.debug('生产relay forward包')
         pass
 
 
