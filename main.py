@@ -6,6 +6,9 @@
 # @desc    : dhcp 命令行接受，本工具为循环发包，未考虑实现并发
 import argparse
 import logging
+
+from env_args import ipv6_src
+
 logging.basicConfig(level=logging.DEBUG)
 from dhcp4_controller import Dhcp4Controller
 from dhcp6_controller import Dhcp6Controller
@@ -39,7 +42,7 @@ def parse_cmd_args_dhcp6():
     subparsers_6.add_argument("--options", "-o", help="""-o '{"option1":{"id":"${id}"},"option2":{"id":1234}}'""",
                               default=None)
     subparsers_6.add_argument("--ipv6_src", "-src", help='指定ipv6源ip,例如: -src "1000::31:350:9640:be36:46f6"',
-                              default="1000:0:0:31::135")
+                              default=ipv6_src)
     subparsers_6.add_argument("--message_type", "-mt", help='发送指定类型报文如：solicit,request,renew',
                               default='default')
     subparsers_6.add_argument("--na_pd", "-np", help='0:前缀模式, 1:后缀模式, 2:前+后缀模式', default=0)

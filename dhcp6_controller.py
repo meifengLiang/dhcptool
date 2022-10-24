@@ -10,13 +10,15 @@ from scapy.layers.dhcp6 import dhcp6types
 
 from dhcp_pkt import Dhcp6Pkt
 from env_args import summary_result
+from tools import Tools
 
 
-class Dhcp6Controller:
+class Dhcp6Controller(Dhcp6Pkt):
 
     def __init__(self, args):
+        super(Dhcp6Controller, self).__init__(args)
         self.args = args
-        self.pkt = Dhcp6Pkt()
+
 
     def run(self):
         logging.debug('初始化汇总结果')
@@ -30,7 +32,13 @@ class Dhcp6Controller:
         发送  dhcp6 完整分配流程
         :return:
         """
-        self.pkt.dhcp6_solicit()
+        solicit_pkt = self.dhcp6_solicit()
+        res = self.send_dhcp6_pkt(solicit_pkt, filter=self.args.get('filter'))
+        Tools.analysis_results(pkts_list=res, filter=self.args.get('filter'))
+
+        request_pkt = self.dhcp6_request()
+        res = self.send_dhcp6_pkt(request_pkt, filter=self.args.get('filter'))
+        Tools.analysis_results(pkts_list=res, filter=self.args.get('filter'))
 
     def send_release(self):
         pass

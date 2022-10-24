@@ -9,6 +9,10 @@ import socket
 import subprocess
 from functools import wraps
 
+from scapy.layers.inet6 import IPv6
+
+from env_args import pkt_result
+
 
 class Tools:
 
@@ -41,3 +45,38 @@ class Tools:
                                       shell=True, stdout=subprocess.PIPE)
         local_ipv6 = str(local_ipv6.stdout.readlines()[1], encoding='utf-8').strip('\n')
         return local_ipv6
+
+    @staticmethod
+    def analysis_results(pkts_list, DHCPv6=None, filter: str = None):
+        """
+        解析结果并存入队列
+        :param pkts_list:
+        :param DHCPv6:
+        :param filter:
+        :return:
+        """
+        for i in pkts_list:
+            if i[IPv6].src == filter and i[DHCPv6].msgtype == 2:
+                i.show()
+                pkt_result.get('dhcp6_advertise').put(i)
+
+            elif i[IPv6].src == filter and i[DHCPv6].msgtype == 7:
+                i.show()
+                pkt_result.get('dhcp6_reply').put(i)
+
+            else:
+                logging.info('没有监听到 server 返回 结果！,请检查是否有多个DHCP server影响监听结果')
+                # self.send_dhcp6_pkt(pkt)
+
+    @staticmethod
+    def print_formart(pkt, level=0):
+        """
+        格式化打印
+        :param pkt:
+        :param level:
+        :return:
+        """
+        if level == 0:
+            pkt.summary()
+        else:
+            pkt.show()

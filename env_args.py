@@ -4,6 +4,7 @@
 # @File    : env_args.py
 # @Software: PyCharm
 # @desc    :
+import queue
 import random
 import subprocess
 import uuid
@@ -23,3 +24,9 @@ ipv6_src = subprocess.Popen("ip -6 address show | grep inet6 | awk '{print $2}' 
                             shell=True, stdout=subprocess.PIPE)
 
 summary_result = {}
+
+pkt_result = {
+    "dhcp6_advertise": queue.Queue(),
+    "dhcp6_reply": queue.Queue()
+}
+
