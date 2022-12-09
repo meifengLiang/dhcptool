@@ -68,14 +68,15 @@ def dhcp_main():
     dhcp_server = args.get('dhcp_server')
 
     if napd and ':' in dhcp_server:
-
-        dhcp6_controldler = Dhcp6Controller(args)
-        dhcp6_controldler.run()
+        dhcp_controller = Dhcp6Controller
     elif napd is None and ':' not in dhcp_server:
-        dhcp4_controller = Dhcp4Controller(args)
-        dhcp4_controller.run()
+        dhcp_controller = Dhcp4Controller
     else:
         logs.error('参数错误, 请检查入参!')
+        return
+    
+    controller = dhcp_controller(args)
+    controller.run()
 
 
 if __name__ == '__main__':
