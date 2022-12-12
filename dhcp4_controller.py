@@ -67,14 +67,15 @@ class Dhcp4Controller(Dhcp4Pkt):
         :return:
         """
         self.__init__(self.args)
-        for i in range(2):
-            discover_pkt = self.dhcp4_discover()
-            res = self.send_dhcp4_pkt(discover_pkt, args=self.args)
-            Tools.analysis_results(pkts_list=res, args=self.args)
-            request_pkt = self.dhcp4_request()
-            Tools.rate_print('租约更新', self.args.get('sleep_time'))
-            ack_pkt = self.send_dhcp4_pkt(request_pkt, args=self.args)
-            Tools.analysis_results(pkts_list=ack_pkt, args=self.args)
+        discover_pkt = self.dhcp4_discover()
+        res = self.send_dhcp4_pkt(discover_pkt, args=self.args)
+        Tools.analysis_results(pkts_list=res, args=self.args)
+        request_pkt = self.dhcp4_request()
+        ack_pkt = self.send_dhcp4_pkt(request_pkt, args=self.args)
+        Tools.analysis_results(pkts_list=ack_pkt, args=self.args)
+        Tools.rate_print('租约更新', self.args.get('sleep_time'))
+        ack_pkt = self.send_dhcp4_pkt(request_pkt, args=self.args)
+        Tools.analysis_results(pkts_list=ack_pkt, args=self.args)
 
     def send_discover_offer_request_ack_decline(self):
         """
