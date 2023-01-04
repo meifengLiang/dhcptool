@@ -37,10 +37,13 @@ class Pkt:
         :param args:
         :return:
         """
-        filter = args.get('filter')
+        if args.get('dhcp_server') == 'ff02::1:2':
+            filter = args.get('filter')
+        else:
+            filter = args.get('dhcp_server')
         debug = args.get('debug')
         Tools.print_formart(pkt, debug)
-        t = AsyncSniffer(iface="eth0", filter=f'port 547 and host {filter}', count=1, timeout=self.timeout)
+        t = AsyncSniffer(iface="eth0", filter=f'port 547 and src host {filter}', count=1, timeout=self.timeout)
         t.start()
         sleep(10 / 1000)
         sendp(pkt, verbose=0)

@@ -107,7 +107,12 @@ class Tools:
         :param filter:
         :return:
         """
-        filter = args.get('dhcp_server')
+        if args.get('dhcp_server') == 'ff02::1:2':
+            filter = args.get('filter')
+        else:
+            filter = args.get('dhcp_server')
+
+        # filter = args.get('dhcp_server')
         debug = args.get('debug')
         call_func_name = getmodule(stack()[1][0])
         call_mod = call_func_name.__name__
