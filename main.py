@@ -47,7 +47,8 @@ def parse_cmd_args_dhcp6():
     subparsers_6.add_argument("--na_pd", "-np", help='输入项： na, pd,na/pd', default='na')
     subparsers_6.add_argument("--debug", "-debug", help='查看详细请求过程,默认为 off, on', type=str, default='off')
     subparsers_6.add_argument("--mac", "-mac", help='指定mac地址进行发流', default=None)
-    subparsers_6.add_argument("--dhcp_server", "-s", required=True,
+    subparsers_6.add_argument("--filter", "-f", help='指定mac地址进行发流', default=None)
+    subparsers_6.add_argument("--dhcp_server", "-s", default='ff02::1:2',
                               help='tcpdump过滤条件，用于接收返回值过滤，必须指定发送方得mac地址,如:  -f "1000:0:0:30::1"')
     subparsers_6.add_argument("--relay_forward", "-rf", type=str, help='配置中继地址, 默认为 None', default=None)
     subparsers_6.add_argument("--sleep_time", "-st", type=int,

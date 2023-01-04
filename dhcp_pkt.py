@@ -37,7 +37,7 @@ class Pkt:
         :param args:
         :return:
         """
-        filter = args.get('dhcp_server')
+        filter = args.get('filter')
         debug = args.get('debug')
         Tools.print_formart(pkt, debug)
         t = AsyncSniffer(iface="eth0", filter=f'port 547 and host {filter}', count=1, timeout=self.timeout)
@@ -68,7 +68,7 @@ class Dhcp6Pkt(Pkt):
 
     def __init__(self, args):
         super(Dhcp6Pkt, self).__init__(args)
-        self.ether_ipv6_udp = self.ether / IPv6(src=Tools.get_local_ipv6(), dst='ff02::1:2') / self.udp
+        self.ether_ipv6_udp = self.ether / IPv6(src=Tools.get_local_ipv6(), dst=self.args.get('dhcp_server')) / self.udp
         self.duid = DUID_LLT(lladdr=mac2str(self.mac), timeval=self.xid)
         self.solicit = DHCP6_Solicit(trid=xid)
         self.release = DHCP6_Release(trid=xid)
