@@ -16,7 +16,7 @@ from scapy.layers.dhcp6 import dhcp6types, DHCP6OptIAAddress, DHCP6OptRelayMsg, 
 from scapy.layers.inet import IP, UDP
 from scapy.layers.inet6 import IPv6
 from scapy.layers.l2 import Ether
-from scapy.utils import mac2str
+from scapy.utils import mac2str, str2mac
 from scapy.volatile import RandMAC
 from env_args import pkt_result, logs, summary_result, global_var
 import time
@@ -51,7 +51,7 @@ class Tools:
         if args.get('mac') is not None:
             mac = Tools.mac_self_incrementing(args.get('mac'), global_var.get('tag'))
         else:
-            mac = RandMAC()
+            mac = mac2str(RandMAC())
         global_var.update({"generate_mac": mac})
         return mac
 
@@ -61,7 +61,7 @@ class Tools:
         根据mac生成hash
         :return:
         """
-        mac = mac.encode('utf-8')
+        mac = str2mac(mac).encode('utf-8')
         m = hashlib.md5()
         m.update(mac)
         mac_xid = int(str(int(m.hexdigest(), 16))[0:9])
@@ -191,7 +191,7 @@ class Tools:
             else:
                 yiaddr = pkt[BOOTP].yiaddr
                 response_dict.update({"yiaddr": yiaddr})
-            mac = str(global_var.get('generate_mac')) or ''
+            mac = str2mac(global_var.get('generate_mac')) or ''
             if response_dict.get('yiaddr'):
                 content_format = "{:<} | yiaddr: {:<15} | {:<}".format(
                     mac, response_dict.get('yiaddr') or '', response_dict.get('info') or '')

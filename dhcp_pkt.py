@@ -13,7 +13,6 @@ from scapy.layers.inet import UDP, IP
 from scapy.layers.inet6 import IPv6
 from scapy.layers.l2 import Ether
 from scapy.sendrecv import sendp, srp1, AsyncSniffer
-from scapy.utils import mac2str
 from env_args import xid, pkt_result, logs
 from options import Dhcp4Options, Dhcp6Options
 from tools import Tools
@@ -72,7 +71,7 @@ class Dhcp6Pkt(Pkt):
     def __init__(self, args):
         super(Dhcp6Pkt, self).__init__(args)
         self.ether_ipv6_udp = self.ether / IPv6(src=Tools.get_local_ipv6(), dst=self.args.get('dhcp_server')) / self.udp
-        self.duid = DUID_LLT(lladdr=mac2str(self.mac), timeval=self.xid)
+        self.duid = DUID_LLT(lladdr=self.mac, timeval=self.xid)
         self.solicit = DHCP6_Solicit(trid=xid)
         self.release = DHCP6_Release(trid=xid)
         self.decline = DHCP6_Decline(trid=xid)
@@ -180,7 +179,7 @@ class Dhcp4Pkt(Pkt):
     def __init__(self, args):
         super(Dhcp4Pkt, self).__init__(args)
         self.make_options = Dhcp4Options(self.args)
-        self.bootp=BOOTP(chaddr=mac2str(self.mac), giaddr=self.args.get('relay_forward'), xid=random.randint(1, 900000000), flags=0)
+        self.bootp=BOOTP(chaddr=self.mac, giaddr=self.args.get('relay_forward'), xid=random.randint(1, 900000000), flags=0)
         self.ether_ip_udp_bootp = Ether() / IP(dst=self.args.get('dhcp_server')) / UDP(sport=67, dport=67) / self.bootp
         self.options_list = self.make_options.make_options_list()
 
