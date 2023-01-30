@@ -7,7 +7,7 @@ pipeline {
         stage('执行打包') {
             steps {
                 sh '. ${PYTHON}'
-                sh 'pyinstaller -F main.py'
+                sh '/root/.venv/bin/pyinstaller -F main.py'
             }
         }
     }
