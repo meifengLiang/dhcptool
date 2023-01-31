@@ -45,7 +45,7 @@ class Dhcp4Options(Options):
         options = []
         options_list = self.parse_dhcp4_options()
         if options_list is not None:
-            for i in options_list:
+            for index, i in enumerate(options_list):
                 if int(i[0]) is 12:
                     options.append(self.option_12(i[1]))
                 if int(i[0]) is 7:
@@ -53,7 +53,7 @@ class Dhcp4Options(Options):
                 if int(i[0]) is 60:
                     options.append(self.option_60(i[1]))
                 if int(i[0]) is 82:
-                    options.append(self.option_82(i[1]))
+                    options.append(self.option_82(i[1], str(index + 1).rjust(2, '0')))
         options.append('end')
         return options
 
@@ -68,9 +68,16 @@ class Dhcp4Options(Options):
         value = binascii.unhexlify(hex)
         return 'vendor_class_id', value
 
-    def option_82(self, value=''):
-        hex = value.encode("utf-8")
-        value = binascii.unhexlify(hex)
+    def option_82(self, value='', suboption_index='01'):
+        try:
+            hex_value = value.encode("utf-8")
+            value = binascii.unhexlify(hex_value)
+        except:
+            value_len = hex(len(value))[2:]
+            hex_value = value.encode("utf-8").hex()
+            value = str(suboption_index) + str(value_len) + hex_value
+            hex_value = value.encode("utf-8")
+            value = binascii.unhexlify(hex_value)
         return 'relay_agent_information', value
 
 
@@ -102,7 +109,7 @@ class Dhcp6Options(Options):
         """
         try:
             if "0000" in account_pwd_hex[:5]:
-                account_pwd_hex=account_pwd_hex[4:]
+                account_pwd_hex = account_pwd_hex[4:]
             vendor_class_data = VENDOR_CLASS_DATA(data=bytes.fromhex(account_pwd_hex))
             option16_pkt = DHCP6OptVendorClass(vcdata=vendor_class_data)
         except Exception as ex:
