@@ -52,6 +52,8 @@ class Dhcp4Options(Options):
                     options.append(self.option_7(i[1]))
                 if int(i[0]) is 60:
                     options.append(self.option_60(i[1]))
+                if int(i[0]) is 82:
+                    options.append(self.option_82(i[1]))
         options.append('end')
         return options
 
@@ -65,6 +67,11 @@ class Dhcp4Options(Options):
         hex = value.encode("utf-8")
         value = binascii.unhexlify(hex)
         return 'vendor_class_id', value
+
+    def option_82(self, value=''):
+        hex = value.encode("utf-8")
+        value = binascii.unhexlify(hex)
+        return 'relay_agent_information', value
 
 
 class Dhcp6Options(Options):
