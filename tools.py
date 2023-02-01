@@ -50,6 +50,7 @@ class Tools:
         """
         if args.get('mac') is not None:
             mac = Tools.mac_self_incrementing(args.get('mac'), global_var.get('tag'))
+            mac = mac2str(mac)
         else:
             mac = mac2str(RandMAC())
         global_var.update({"generate_mac": mac})
