@@ -5,7 +5,8 @@
 # @Software: PyCharm
 # @desc    :
 import binascii
-from scapy.layers.dhcp6 import DHCP6OptVendorClass, VENDOR_CLASS_DATA, DHCP6OptIfaceId, DHCP6OptStatusCode
+from scapy.layers.dhcp6 import DHCP6OptVendorClass, VENDOR_CLASS_DATA, DHCP6OptIfaceId, DHCP6OptStatusCode, \
+    DHCP6OptRapidCommit, DHCP6OptOptReq
 from env_args import logs
 
 
@@ -54,6 +55,8 @@ class Dhcp4Options(Options):
                     options.append(self.option_60(i[1]))
                 if int(i[0]) is 82:
                     options.append(self.option_82(i[1], str(index + 1).rjust(2, '0')))
+                if int(i[0]) is 55:
+                    options.append(self.option_55(i[1]))
         options.append('end')
         return options
 
@@ -80,6 +83,11 @@ class Dhcp4Options(Options):
             value = binascii.unhexlify(hex_value)
         return 'relay_agent_information', value
 
+    def option_55(self, value=''):
+        print(value)
+        value_list = [int(i) for i in value.split(',')]
+        return 'param_req_list', value_list
+
 
 class Dhcp6Options(Options):
 
@@ -100,6 +108,10 @@ class Dhcp6Options(Options):
                     options = self.option_16(i[1]) / options
                 if int(i[0]) is 18:
                     options = self.option_18(i[1]) / options
+                if int(i[0]) is 6:
+                    options = self.option_6(i[1]) / options
+                if int(i[0]) is 14:
+                    options = self.option_14() / options
         return options
 
     def option_16(self, account_pwd_hex: str):
@@ -125,3 +137,23 @@ class Dhcp6Options(Options):
         """
         option18_pkt = DHCP6OptIfaceId(ifaceid=ipoe_value)
         return option18_pkt
+
+    def option_6(self, value):
+        """
+        Option Request
+        :return:
+        """
+        if value:
+            value_list = [int(i) for i in value.split(',')]
+            option6_pkt = DHCP6OptOptReq(reqopts=value_list)
+        else:
+            option6_pkt = DHCP6OptOptReq()
+        return option6_pkt
+
+    def option_14(self):
+        """
+        Rapid Commit
+        :return:
+        """
+        option14_pkt = DHCP6OptRapidCommit()
+        return option14_pkt
