@@ -84,7 +84,6 @@ class Dhcp4Options(Options):
         return 'relay_agent_information', value
 
     def option_55(self, value=''):
-        print(value)
         value_list = [int(i) for i in value.split(',')]
         return 'param_req_list', value_list
 
