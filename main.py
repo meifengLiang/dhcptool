@@ -1,83 +1,81 @@
-# -*- coding: gbk -*-
+# -*- coding: utf-8 -*-
 # @Time    : 2022/10/23 16:33
 # @Author  : mf.liang
 # @File    : main.py
 # @Software: PyCharm
-# @desc    : dhcp ÃüÁîĞĞ½ÓÊÜ£¬±¾¹¤¾ßÎªÑ­»··¢°ü£¬Î´¿¼ÂÇÊµÏÖ²¢·¢
+# @desc    : dhcp å‘½ä»¤è¡Œæ¥å—ï¼Œæœ¬å·¥å…·ä¸ºå¾ªç¯å‘åŒ…ï¼Œæœªè€ƒè™‘å®ç°å¹¶å‘
 import argparse
 from env_args import logs, global_var
 from dhcp4_controller import Dhcp4Controller
 from dhcp6_controller import Dhcp6Controller
 from tools import Tools
 
-parser = argparse.ArgumentParser(description="DHCP·¢°ü,Í¬Ê±Ö§³Öipv4,ipv6", conflict_handler='resolve')
-subparsers = parser.add_subparsers(help='help°ïÖúĞÅÏ¢')
-subparsers_4 = subparsers.add_parser('v4', help='DHCP4 ·¢°ü°ïÖúĞÅÏ¢')
-subparsers_6 = subparsers.add_parser('v6', help='DHCP6 ·¢°ü°ïÖúĞÅÏ¢')
+parser = argparse.ArgumentParser(description="DHCPå‘åŒ…,åŒæ—¶æ”¯æŒipv4,ipv6", conflict_handler='resolve')
+subparsers = parser.add_subparsers(help='helpå¸®åŠ©ä¿¡æ¯')
+subparsers_4 = subparsers.add_parser('v4', help='DHCP4 å‘åŒ…å¸®åŠ©ä¿¡æ¯')
+subparsers_6 = subparsers.add_parser('v6', help='DHCP6 å‘åŒ…å¸®åŠ©ä¿¡æ¯')
 
 
 def parse_cmd_args_dhcp4():
     """
-    # ½âÎödhcp4²ÎÊı
+    # è§£ædhcp4å‚æ•°
     :return:
     """
-    subparsers_4.add_argument("--num", "-n", help="·¢°üÊıÁ¿", default=1)
-    subparsers_4.add_argument("--dhcp_server", "-s", help="Ö¸¶¨DHCP·şÎñÆ÷", required=True)
-    subparsers_4.add_argument("--relay_forward", "-rf", help="Ö¸¶¨ÖĞ¼Ì·şÎñÆ÷", default=Tools.get_local_ipv4())
-    subparsers_4.add_argument("--options", "-o", help='Ìí¼Óoption,¸ñÊ½£ºhostname=yamu&option_name=value')
-    subparsers_4.add_argument("--message_type", "-mt", help='·¢ËÍÖ¸¶¨ÀàĞÍ±¨ÎÄÈç£ºdiscover,request,renew,release,decline,inform',
+    subparsers_4.add_argument("--num", "-n", help="å‘åŒ…æ•°é‡", default=1)
+    subparsers_4.add_argument("--dhcp_server", "-s", help="æŒ‡å®šDHCPæœåŠ¡å™¨", required=True)
+    subparsers_4.add_argument("--relay_forward", "-rf", help="æŒ‡å®šä¸­ç»§æœåŠ¡å™¨", default=Tools.get_local_ipv4())
+    subparsers_4.add_argument("--options", "-o", help='æ·»åŠ option,æ ¼å¼ï¼šhostname=yamu&option_name=value')
+    subparsers_4.add_argument("--message_type", "-mt", help='å‘é€æŒ‡å®šç±»å‹æŠ¥æ–‡å¦‚ï¼šdiscover,request,renew,release,decline,inform',
                               default='default')
-    subparsers_4.add_argument("--debug", "-debug", help='²é¿´ÏêÏ¸ÇëÇó¹ı³Ì,Ä¬ÈÏÎª off, on', type=str, default='off')
-    subparsers_4.add_argument("--mac", "-mac", help='Ö¸¶¨macµØÖ·½øĞĞ·¢Á÷', default=None)
+    subparsers_4.add_argument("--debug", "-debug", help='æŸ¥çœ‹è¯¦ç»†è¯·æ±‚è¿‡ç¨‹,é»˜è®¤ä¸º off, on', type=str, default='off')
+    subparsers_4.add_argument("--mac", "-mac", help='æŒ‡å®šmacåœ°å€è¿›è¡Œå‘æµ', default=None)
     subparsers_4.add_argument("--sleep_time", "-st", type=int,
-                              help='ÔÚÌØ¶¨½×¶Î µÈ´ıÒ»¶ÎÊ±¼ä,Ö§³ÖÍê³ÉackºóµÈ´ıÖ¸¶¨Ê±¼äºóÖ´ĞĞÏÂÃæµÄ¶¯×÷', default=0)
+                              help='åœ¨ç‰¹å®šé˜¶æ®µ ç­‰å¾…ä¸€æ®µæ—¶é—´,æ”¯æŒå®Œæˆackåç­‰å¾…æŒ‡å®šæ—¶é—´åæ‰§è¡Œä¸‹é¢çš„åŠ¨ä½œ', default=0)
 
 
 def parse_cmd_args_dhcp6():
     """
-    ½âÎödhcp6²ÎÊı
+    è§£ædhcp6å‚æ•°
     :return:
     """
-    subparsers_6.add_argument("--num", "-n", help="·¢°üÊıÁ¿", default=1)
-    subparsers_6.add_argument("--options", "-o", help="×Ô¶¨Òåoptions",
+    subparsers_6.add_argument("--num", "-n", help="å‘åŒ…æ•°é‡", default=1)
+    subparsers_6.add_argument("--options", "-o", help="è‡ªå®šä¹‰options",
                               default=None)
-    subparsers_6.add_argument("--ipv6_src", "-src", help='Ö¸¶¨ipv6Ô´ip,ÀıÈç: -src "1000::31:350:9640:be36:46f6"')
-    subparsers_6.add_argument("--message_type", "-mt", help='·¢ËÍÖ¸¶¨ÀàĞÍ±¨ÎÄÈç£ºsolicit,request,renew,release,decline',
+    subparsers_6.add_argument("--ipv6_src", "-src", help='æŒ‡å®šipv6æºip,ä¾‹å¦‚: -src "1000::31:350:9640:be36:46f6"')
+    subparsers_6.add_argument("--message_type", "-mt", help='å‘é€æŒ‡å®šç±»å‹æŠ¥æ–‡å¦‚ï¼šsolicit,request,renew,release,decline',
                               default='default')
-    subparsers_6.add_argument("--na_pd", "-np", help='ÊäÈëÏî£º na, pd,na/pd', default='na')
-    subparsers_6.add_argument("--debug", "-debug", help='²é¿´ÏêÏ¸ÇëÇó¹ı³Ì,Ä¬ÈÏÎª off, on', type=str, default='off')
-    subparsers_6.add_argument("--mac", "-mac", help='Ö¸¶¨macµØÖ·½øĞĞ·¢Á÷', default=None)
-    subparsers_6.add_argument("--filter", "-f", help='Ö¸¶¨macµØÖ·½øĞĞ·¢Á÷', default=None)
-    subparsers_6.add_argument("--dhcp_server", "-s", default='ff02::1:2',
-                              help='tcpdump¹ıÂËÌõ¼ş£¬ÓÃÓÚ½ÓÊÕ·µ»ØÖµ¹ıÂË£¬±ØĞëÖ¸¶¨·¢ËÍ·½µÃmacµØÖ·,Èç:  -f "1000:0:0:30::1"')
-    subparsers_6.add_argument("--relay_forward", "-rf", type=str, help='ÅäÖÃÖĞ¼ÌµØÖ·, Ä¬ÈÏÎª None', default=None)
+    subparsers_6.add_argument("--na_pd", "-np", help='è¾“å…¥é¡¹ï¼š na, pd,na/pd', default='na')
+    subparsers_6.add_argument("--debug", "-debug", help='æŸ¥çœ‹è¯¦ç»†è¯·æ±‚è¿‡ç¨‹,é»˜è®¤ä¸º off, on', type=str, default='off')
+    subparsers_6.add_argument("--mac", "-mac", help='æŒ‡å®šmacåœ°å€è¿›è¡Œå‘æµ', default=None)
+    subparsers_6.add_argument("--dhcp_server", "-s", required=True,
+                              help='tcpdumpè¿‡æ»¤æ¡ä»¶ï¼Œç”¨äºæ¥æ”¶è¿”å›å€¼è¿‡æ»¤ï¼Œå¿…é¡»æŒ‡å®šå‘é€æ–¹å¾—macåœ°å€,å¦‚:  -f "1000:0:0:30::1"')
+    subparsers_6.add_argument("--relay_forward", "-rf", type=str, help='é…ç½®ä¸­ç»§åœ°å€, é»˜è®¤ä¸º None', default=None)
     subparsers_6.add_argument("--sleep_time", "-st", type=int,
-                              help='ÔÚÌØ¶¨½×¶Î µÈ´ıÒ»¶ÎÊ±¼ä,Ö§³ÖÍê³ÉackºóµÈ´ıÖ¸¶¨Ê±¼äºóÖ´ĞĞÏÂÃæµÄ¶¯×÷', default=0)
+                              help='åœ¨ç‰¹å®šé˜¶æ®µ ç­‰å¾…ä¸€æ®µæ—¶é—´,æ”¯æŒå®Œæˆackåç­‰å¾…æŒ‡å®šæ—¶é—´åæ‰§è¡Œä¸‹é¢çš„åŠ¨ä½œ', default=0)
 
 
 def dhcp_main():
     """
-    dhcpÖ´ĞĞº¯ÊıÈë¿Ú
+    dhcpæ‰§è¡Œå‡½æ•°å…¥å£
     :return:  v6 -s 1000:0:0:31::11 -n 5
     """
     parse_cmd_args_dhcp4()
     parse_cmd_args_dhcp6()
     args = vars(parser.parse_args())
     global_var.update(args)
-    logs.info(f"½âÎöÃüÁîĞĞ:\t{args}")
+    logs.info(f"è§£æå‘½ä»¤è¡Œ:\t{args}")
     napd = args.get('na_pd')
     dhcp_server = args.get('dhcp_server')
 
     if napd and ':' in dhcp_server:
-        dhcp_controller = Dhcp6Controller
+
+        dhcp6_controldler = Dhcp6Controller(args)
+        dhcp6_controldler.run()
     elif napd is None and ':' not in dhcp_server:
-        dhcp_controller = Dhcp4Controller
+        dhcp4_controller = Dhcp4Controller(args)
+        dhcp4_controller.run()
     else:
-        logs.error('²ÎÊı´íÎó, Çë¼ì²éÈë²Î!')
-        return
-    
-    controller = dhcp_controller(args)
-    controller.run()
+        logs.error('å‚æ•°é”™è¯¯, è¯·æ£€æŸ¥å…¥å‚!')
 
 
 if __name__ == '__main__':
