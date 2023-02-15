@@ -29,6 +29,7 @@ def parse_cmd_args_dhcp4():
                               default='default')
     subparsers_4.add_argument("--debug", "-debug", help='查看详细请求过程,默认为 off, on', type=str, default='off')
     subparsers_4.add_argument("--mac", "-mac", help='指定mac地址进行发流', default=None)
+    subparsers_4.add_argument("--multiprocessing", "-mp", default='master,192.168.31.134,8080', help='分布式测试配置')
     subparsers_4.add_argument("--sleep_time", "-st", type=int,
                               help='在特定阶段 等待一段时间,支持完成ack后等待指定时间后执行下面的动作', default=0)
 
@@ -47,6 +48,7 @@ def parse_cmd_args_dhcp6():
     subparsers_6.add_argument("--na_pd", "-np", help='输入项： na, pd,na/pd', default='na')
     subparsers_6.add_argument("--debug", "-debug", help='查看详细请求过程,默认为 off, on', type=str, default='off')
     subparsers_6.add_argument("--mac", "-mac", help='指定mac地址进行发流', default=None)
+    subparsers_6.add_argument("--multiprocessing", "-mp", default='master,192.168.31.134,8080', help='分布式测试配置')
     subparsers_6.add_argument("--dhcp_server", "-s", required=True,
                               help='tcpdump过滤条件，用于接收返回值过滤，必须指定发送方得mac地址,如:  -f "1000:0:0:30::1"')
     subparsers_6.add_argument("--relay_forward", "-rf", type=str, help='配置中继地址, 默认为 None', default=None)
