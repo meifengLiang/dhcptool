@@ -29,7 +29,7 @@ def parse_cmd_args_dhcp4():
                               default='default')
     subparsers_4.add_argument("--debug", "-debug", help='查看详细请求过程,默认为 off, on', type=str, default='off')
     subparsers_4.add_argument("--mac", "-mac", help='指定mac地址进行发流', default=None)
-    subparsers_4.add_argument("--multiprocessing", "-mp", default='master,192.168.31.134,8080', help='分布式测试配置')
+    subparsers_4.add_argument("--multiprocessing", "-mp", default='master/slave,192.168.31.134,8080', help='分布式测试配置')
     subparsers_4.add_argument("--sleep_time", "-st", type=int,
                               help='在特定阶段 等待一段时间,支持完成ack后等待指定时间后执行下面的动作', default=0)
 
