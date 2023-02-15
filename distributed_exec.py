@@ -8,9 +8,15 @@
 
 """
 from multiprocessing.managers import BaseManager
+from queue import Queue
 
 
 class QueueManager(BaseManager):
+
+    def __init__(self):
+        self.task_queue = Queue()
+        self.result_queue = Queue()
+        super().__init__()
 
     def get_slave(self):
         pass
