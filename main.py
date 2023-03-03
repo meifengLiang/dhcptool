@@ -23,6 +23,8 @@ def parse_cmd_args_dhcp4():
     """
     subparsers_4.add_argument("--num", "-n", help="发包数量", default=1)
     subparsers_4.add_argument("--dhcp_server", "-s", help="指定DHCP服务器", required=True)
+    subparsers_6.add_argument("--filter", "-f", help='tcpdump过滤条件，用于接收返回值过滤，必须指定发送方得mac地址,如:  -f "192.168.31.1"',
+                              default=None)
     subparsers_4.add_argument("--relay_forward", "-rf", help="指定中继服务器", default=Tools.get_local_ipv4())
     subparsers_4.add_argument("--options", "-o", help='添加option,格式：hostname=yamu&option_name=value')
     subparsers_4.add_argument("--message_type", "-mt", help='发送指定类型报文如：discover,request,renew,release,decline,inform',
