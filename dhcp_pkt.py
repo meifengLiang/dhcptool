@@ -12,6 +12,7 @@ from scapy.layers.dhcp6 import DHCP6_Solicit, DHCP6_Release, DHCP6OptClientId, D
 from scapy.layers.inet import UDP, IP
 from scapy.layers.inet6 import IPv6
 from scapy.layers.l2 import Ether
+from scapy.utils import mac2str, str2mac
 from scapy.sendrecv import sendp, srp1, AsyncSniffer
 from env_args import xid, pkt_result, logs
 from options import Dhcp4Options, Dhcp6Options
@@ -36,13 +37,18 @@ class Pkt:
         :param args:
         :return:
         """
-        if args.get('dhcp_server') == 'ff02::1:2':
+        # if args.get('dhcp_server') == 'ff02::1:2':
+        #     filter = args.get('filter')
+        # else:
+        #     filter = args.get('dhcp_server')
+
+        if args.get('filter'):
             filter = args.get('filter')
         else:
             filter = args.get('dhcp_server')
         debug = args.get('debug')
         Tools.print_formart(pkt, debug)
-        t = AsyncSniffer(iface="eth0", filter=f'port 547 and src host {filter}', count=1, timeout=self.timeout)
+        t = AsyncSniffer(iface=args.get('iface'), filter=f'port 547 and src host {filter}', count=1, timeout=self.timeout)
         t.start()
         sleep(10 / 1000)
         sendp(pkt, verbose=0)
@@ -56,21 +62,46 @@ class Pkt:
         :param args:
         :return:
         """
-        debug = args.get('debug')
-        Tools.print_formart(pkt, debug)
-        res = srp1(pkt, verbose=0, timeout=self.timeout)
-        try:
-            assert res
-        except Exception as ex:
-            logs.error('没有接收到返回包！', ex)
-        return res
+        if args.get('filter'):
+            filter = args.get('filter')
+            debug = args.get('debug')
+            Tools.print_formart(pkt, debug)
+            t = AsyncSniffer(iface=args.get('iface'), filter=f'port 67 and src host {filter}', count=1, timeout=self.timeout)
+            t.start()
+            sleep(10 / 1000)
+            sendp(pkt, verbose=0, iface=args.get('iface'))
+            t.join()
+            return t.results
+        else:
+            debug = args.get('debug')
+            Tools.print_formart(pkt, debug)
+            res = srp1(pkt, verbose=0, timeout=self.timeout, iface=args.get('iface'))
+            try:
+                assert res
+            except Exception as ex:
+                logs.error('没有接收到返回包！', ex)
+            return res
+
+    def send_dhcp4_pkt_sniff(self):
+        pass
+        # debug = args.get('debug')
+        # Tools.print_formart(pkt, debug)
+        # res = srp1(pkt, verbose=0, timeout=self.timeout)
+        # try:
+        #     assert res
+        # except Exception as ex:
+        #     logs.error('没有接收到返回包！', ex)
+        # return res
 
 
 class Dhcp6Pkt(Pkt):
 
     def __init__(self, args):
         super(Dhcp6Pkt, self).__init__(args)
-        self.ether_ipv6_udp = self.ether / IPv6(src=Tools.get_local_ipv6(), dst=self.args.get('dhcp_server')) / self.udp
+        if args.get('filter'):
+            self.ether_ipv6_udp = self.ether / IPv6(src=Tools.get_local_ipv6(), dst='ff02::1:2') / self.udp
+        else:
+            self.ether_ipv6_udp = self.ether / IPv6(src=Tools.get_local_ipv6(), dst=self.args.get('dhcp_server')) / self.udp
         self.duid = DUID_LLT(lladdr=self.mac, timeval=self.xid)
         self.solicit = DHCP6_Solicit(trid=xid)
         self.release = DHCP6_Release(trid=xid)
@@ -179,8 +210,20 @@ class Dhcp4Pkt(Pkt):
     def __init__(self, args):
         super(Dhcp4Pkt, self).__init__(args)
         self.make_options = Dhcp4Options(self.args)
-        self.bootp=BOOTP(chaddr=self.mac, giaddr=self.args.get('relay_forward'), xid=random.randint(1, 900000000), flags=0)
-        self.ether_ip_udp_bootp = Ether() / IP(dst=self.args.get('dhcp_server')) / UDP(sport=67, dport=67) / self.bootp
+        if args.get('filter'):
+            self.bootp = BOOTP(chaddr=self.mac,
+                               giaddr='0.0.0.0',
+                               xid=random.randint(1, 900000000),
+                               flags=1)
+            self.ether_ip_udp_bootp = Ether(src=str2mac(self.mac), dst='ff:ff:ff:ff:ff:ff') / IP(src='0.0.0.0', dst='255.255.255.255') \
+                                      / UDP(sport=67, dport=67) / self.bootp
+        else:
+            self.bootp = BOOTP(chaddr=self.mac,
+                               giaddr=self.args.get('relay_forward'),
+                               xid=random.randint(1, 900000000),
+                               flags=0)
+            self.ether_ip_udp_bootp = Ether() / IP(dst=self.args.get('dhcp_server')) / \
+                                      UDP(sport=67, dport=67) / self.bootp
         self.options_list = self.make_options.make_options_list()
 
     def dhcp4_discover(self):

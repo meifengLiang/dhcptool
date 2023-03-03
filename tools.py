@@ -108,11 +108,15 @@ class Tools:
         :param filter:
         :return:
         """
-        if args.get('dhcp_server') == 'ff02::1:2':
+        # if args.get('dhcp_server') == 'ff02::1:2':
+        #     filter = args.get('filter')
+        # else:
+        #     filter = args.get('dhcp_server')
+
+        if args.get('filter'):
             filter = args.get('filter')
         else:
             filter = args.get('dhcp_server')
-
         # filter = args.get('dhcp_server')
         debug = args.get('debug')
         call_func_name = getmodule(stack()[1][0])
@@ -126,7 +130,6 @@ class Tools:
                     elif i[DHCP].options[0][1] == 5:
                         pkt_result.get('dhcp4_ack').put(i)
                         Tools.print_formart(i, debug)
-
                 else:
                     logs.info('没有监听到 server 返回 结果！,请检查是否有多个DHCP server影响监听结果')
             else:

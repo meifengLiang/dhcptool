@@ -22,16 +22,18 @@ def parse_cmd_args_dhcp4():
     :return:
     """
     subparsers_4.add_argument("--num", "-n", help="发包数量", default=1)
-    subparsers_4.add_argument("--dhcp_server", "-s", help="指定DHCP服务器", required=True)
-    subparsers_6.add_argument("--filter", "-f", help='tcpdump过滤条件，用于接收返回值过滤，必须指定发送方得mac地址,如:  -f "192.168.31.1"',
+    subparsers_4.add_argument("--dhcp_server", "-s", help="指定DHCP服务器")
+    subparsers_4.add_argument("--filter", "-f", help='tcpdump过滤条件，用于接收返回值过滤，必须指定发送方得mac地址,如:  -f "192.168.31.1"',
                               default=None)
     subparsers_4.add_argument("--relay_forward", "-rf", help="指定中继服务器", default=Tools.get_local_ipv4())
     subparsers_4.add_argument("--options", "-o", help='添加option,格式：hostname=yamu&option_name=value')
     subparsers_4.add_argument("--message_type", "-mt", help='发送指定类型报文如：discover,request,renew,release,decline,inform',
                               default='default')
+    subparsers_4.add_argument("--iface", "-i", help='指定网卡', default='eth0')
     subparsers_4.add_argument("--debug", "-debug", help='查看详细请求过程,默认为 off, on', type=str, default='off')
     subparsers_4.add_argument("--mac", "-mac", help='指定mac地址进行发流', default=None)
-    subparsers_4.add_argument("--multiprocessing", "-mp", default='master/slave,192.168.31.134,192.168.31.134,8080', help='分布式测试配置')
+    subparsers_4.add_argument("--multiprocessing", "-mp", default='master/slave,192.168.31.134,192.168.31.134,8080',
+                              help='分布式测试配置')
     subparsers_4.add_argument("--sleep_time", "-st", type=int,
                               help='在特定阶段 等待一段时间,支持完成ack后等待指定时间后执行下面的动作', default=0)
 
@@ -51,9 +53,9 @@ def parse_cmd_args_dhcp6():
     subparsers_6.add_argument("--debug", "-debug", help='查看详细请求过程,默认为 off, on', type=str, default='off')
     subparsers_6.add_argument("--mac", "-mac", help='指定mac地址进行发流', default=None)
     subparsers_6.add_argument("--multiprocessing", "-mp", default='master,192.168.31.134,8080', help='分布式测试配置')
-    subparsers_6.add_argument("--dhcp_server", "-s", required=True,
-                              help='tcpdump过滤条件，用于接收返回值过滤，必须指定发送方得mac地址,如:  -f "1000:0:0:30::1"')
-    subparsers_6.add_argument("--filter", "-f", help='tcpdump过滤条件，用于接收返回值过滤，必须指定发送方得mac地址,如:  -f "1000:0:0:30::1"', default=None)
+    subparsers_6.add_argument("--dhcp_server", "-s", help='tcpdump过滤条件，用于接收返回值过滤，必须指定发送方得mac地址,如:  -f "1000:0:0:30::1"')
+    subparsers_6.add_argument("--filter", "-f", help='tcpdump过滤条件，用于接收返回值过滤，必须指定发送方得mac地址,如:  -f "1000:0:0:30::1"',
+                              default=None)
     subparsers_6.add_argument("--relay_forward", "-rf", type=str, help='配置中继地址, 默认为 None', default=None)
     subparsers_6.add_argument("--sleep_time", "-st", type=int,
                               help='在特定阶段 等待一段时间,支持完成ack后等待指定时间后执行下面的动作', default=0)
@@ -70,13 +72,13 @@ def dhcp_main():
     global_var.update(args)
     logs.info(f"解析命令行:\t{args}")
     napd = args.get('na_pd')
-    dhcp_server = args.get('dhcp_server')
+    dhcp_server, filter = args.get('dhcp_server'), args.get('filter')
 
-    if napd and ':' in dhcp_server:
+    if napd:
 
         dhcp6_controldler = Dhcp6Controller(args)
         dhcp6_controldler.run()
-    elif napd is None and ':' not in dhcp_server:
+    elif napd is None:
         dhcp4_controller = Dhcp4Controller(args)
         dhcp4_controller.run()
     else:
