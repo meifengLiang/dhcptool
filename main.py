@@ -51,6 +51,7 @@ def parse_cmd_args_dhcp6():
     subparsers_6.add_argument("--multiprocessing", "-mp", default='master,192.168.31.134,8080', help='分布式测试配置')
     subparsers_6.add_argument("--dhcp_server", "-s", required=True,
                               help='tcpdump过滤条件，用于接收返回值过滤，必须指定发送方得mac地址,如:  -f "1000:0:0:30::1"')
+    subparsers_6.add_argument("--filter", "-f", help='tcpdump过滤条件，用于接收返回值过滤，必须指定发送方得mac地址,如:  -f "1000:0:0:30::1"', default=None)
     subparsers_6.add_argument("--relay_forward", "-rf", type=str, help='配置中继地址, 默认为 None', default=None)
     subparsers_6.add_argument("--sleep_time", "-st", type=int,
                               help='在特定阶段 等待一段时间,支持完成ack后等待指定时间后执行下面的动作', default=0)
