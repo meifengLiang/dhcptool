@@ -37,6 +37,7 @@ class Pkt:
         :param args:
         :return:
         """
+
         if args.get('filter'):
             filter = args.get('filter')
         else:
