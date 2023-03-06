@@ -75,7 +75,6 @@ def dhcp_main():
     dhcp_server, filter = args.get('dhcp_server'), args.get('filter')
 
     if napd:
-
         dhcp6_controldler = Dhcp6Controller(args)
         dhcp6_controldler.run()
     elif napd is None:
