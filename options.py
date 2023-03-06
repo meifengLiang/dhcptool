@@ -17,7 +17,7 @@ class Options:
 
     def parse_dhcp4_options(self):
         options_list = self.args.get('options')
-        if options_list is None:
+        if options_list == None:
             return None
         else:
             options_list = [i.split('=') for i in options_list.split('&')]
@@ -25,7 +25,7 @@ class Options:
 
     def parse_dhcp6_options(self):
         options_list = self.args.get('options')
-        if options_list is None:
+        if options_list == None:
             return None
         else:
             options_list = [i.split('=') for i in options_list.split('&')]
@@ -47,17 +47,17 @@ class Dhcp4Options(Options):
         options_list = self.parse_dhcp4_options()
         if options_list is not None:
             for index, i in enumerate(options_list):
-                if int(i[0]) is 12:
+                if int(i[0]) == 12:
                     options.append(self.option_12(i[1]))
-                if int(i[0]) is 7:
+                if int(i[0]) == 7:
                     options.append(self.option_7(i[1]))
-                if int(i[0]) is 60:
+                if int(i[0]) == 60:
                     options.append(self.option_60(i[1]))
-                if int(i[0]) is 82:
+                if int(i[0]) == 82:
                     options.append(self.option_82(i[1], str(index + 1).rjust(2, '0')))
-                if int(i[0]) is 55:
+                if int(i[0]) == 55:
                     options.append(self.option_55(i[1]))
-                if int(i[0]) is 50:
+                if int(i[0]) == 50:
                     options.append(self.option_50(i[1]))
         options.append('end')
         return options
@@ -108,13 +108,13 @@ class Dhcp6Options(Options):
         options_list = self.parse_dhcp6_options()
         if options_list is not None:
             for i in options_list:
-                if int(i[0]) is 16:
+                if int(i[0]) == 16:
                     options = self.option_16(i[1]) / options
-                if int(i[0]) is 18:
+                if int(i[0]) == 18:
                     options = self.option_18(i[1]) / options
-                if int(i[0]) is 6:
+                if int(i[0]) == 6:
                     options = self.option_6(i[1]) / options
-                if int(i[0]) is 14:
+                if int(i[0]) == 14:
                     options = self.option_14() / options
         return options
 
