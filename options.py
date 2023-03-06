@@ -57,6 +57,8 @@ class Dhcp4Options(Options):
                     options.append(self.option_82(i[1], str(index + 1).rjust(2, '0')))
                 if int(i[0]) is 55:
                     options.append(self.option_55(i[1]))
+                if int(i[0]) is 50:
+                    options.append(self.option_50(i[1]))
         options.append('end')
         return options
 
@@ -86,6 +88,9 @@ class Dhcp4Options(Options):
     def option_55(self, value=''):
         value_list = [int(i) for i in value.split(',')]
         return 'param_req_list', value_list
+
+    def option_50(self, value):
+        return 'requested_addr', value
 
 
 class Dhcp6Options(Options):
