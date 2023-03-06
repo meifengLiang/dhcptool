@@ -21,7 +21,7 @@ xid = random.randint(1, 900000000)
 
 # 获取本机ipv6
 sys = platform.system()
-if sys is 'Windows':
+if sys == 'Windows':
     output = (os.popen('wmic nicConfig where "IPEnabled=True" get IPAddress')
         .read().strip(' ').replace(' ', '').split('\n\n')[1])
     ipv6_src = list(eval(output))[0]
