@@ -237,3 +237,7 @@ class Tools:
             for i in range(sleep_time, 0, -1):
                 print("\r", text_tips, '倒计时', "{}".format(i), '', end="", flush=True)
                 time.sleep(1)
+
+    @staticmethod
+    def get_version():
+        return 'dhcptool.v1.0'

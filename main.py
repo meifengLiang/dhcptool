@@ -11,6 +11,7 @@ from dhcp6_controller import Dhcp6Controller
 from tools import Tools
 
 parser = argparse.ArgumentParser(description="DHCP发包,同时支持ipv4,ipv6", conflict_handler='resolve')
+parser.add_argument("--version", "-v", help="查看dhcptool版本信息", action='version', version=Tools.get_version())
 subparsers = parser.add_subparsers(help='help帮助信息')
 subparsers_4 = subparsers.add_parser('v4', help='DHCP4 发包帮助信息')
 subparsers_6 = subparsers.add_parser('v6', help='DHCP6 发包帮助信息')
