@@ -197,11 +197,6 @@ class Dhcp4Pkt(Pkt):
         if args.get('filter'):
             self.bootp = BOOTP(chaddr=self.mac, giaddr='0.0.0.0', xid=random.randint(1, 900000000), flags=1)
             self.ether_ip_udp_bootp = Ether(src=str2mac(self.mac), dst='ff:ff:ff:ff:ff:ff') / IP(src='0.0.0.0', dst='255.255.255.255') / UDP(sport=67, dport=67) / self.bootp
-            # if args.get('mac'):
-            #
-            # else:
-            #     self.bootp = BOOTP(giaddr='0.0.0.0', xid=random.randint(1, 900000000), flags=1)
-            #     self.ether_ip_udp_bootp = Ether(dst='ff:ff:ff:ff:ff:ff') / IP(src='0.0.0.0', dst='255.255.255.255') / UDP(sport=67, dport=67) / self.bootp
         else:
             self.bootp = BOOTP(chaddr=self.mac, giaddr=self.args.get('relay_forward'), xid=random.randint(1, 900000000), flags=0)
             self.ether_ip_udp_bootp = Ether() / IP(dst=self.args.get('dhcp_server')) / UDP(sport=67, dport=67) / self.bootp
