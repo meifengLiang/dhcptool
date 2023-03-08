@@ -22,21 +22,22 @@ def parse_cmd_args_dhcp4():
     # 解析dhcp4参数
     :return:
     """
-    subparsers_4.add_argument("--num", "-n", help="发包数量", default=1)
-    subparsers_4.add_argument("--dhcp_server", "-s", help="指定DHCP服务器")
-    subparsers_4.add_argument("--filter", "-f", help='tcpdump过滤条件，用于接收返回值过滤，必须指定发送方得mac地址,如:  -f "192.168.31.1"',
-                              default=None)
-    subparsers_4.add_argument("--relay_forward", "-rf", help="指定中继服务器", default=Tools.get_local_ipv4())
-    subparsers_4.add_argument("--options", "-o", help='添加option,格式：hostname=yamu&option_name=value')
-    subparsers_4.add_argument("--message_type", "-mt", help='发送指定类型报文如：discover,request,renew,release,decline,inform',
-                              default='default')
-    subparsers_4.add_argument("--iface", "-i", help='指定网卡', default='eth0')
-    subparsers_4.add_argument("--debug", "-debug", help='查看详细请求过程,默认为 off, on', type=str, default='off')
-    subparsers_4.add_argument("--mac", "-mac", help='指定mac地址进行发流', default=None)
-    subparsers_4.add_argument("--multiprocessing", "-mp", default='master/slave,192.168.31.134,192.168.31.134,8080',
-                              help='分布式测试配置')
-    subparsers_4.add_argument("--sleep_time", "-st", type=int,
-                              help='在特定阶段 等待一段时间,支持完成ack后等待指定时间后执行下面的动作', default=0)
+    subparsers_4.add_argument("--num", "-n", help="数量  例: dhcptool v4 -s 192.168.31.134 -n 10", default=1)
+    subparsers_4.add_argument("--dhcp_server", "-s", help="DHCP服务器(单播)  例: dhcptool v4 -s 192.168.31.134")
+    subparsers_4.add_argument("--filter", "-f", help='DHCP服务器(广播)   例: dhcptool v4 -f 192.168.31.134', default=None)
+    subparsers_4.add_argument("--relay_forward", "-rf", default=Tools.get_local_ipv4(),
+                              help="填充giaddr  例: dhcptool v4 -s 192.168.31.134 -rf 192.168.31.1")
+
+    subparsers_4.add_argument("--options", "-o",
+                              help='填充options    例: 格式:dhcptool v4 -s 192.168.31.134 -o [code]=[value]&[code]=[value] [dhcptool v4 -s 192.168.31.134 -o [12=yamu&7=1.1.1.1][82="eth 2/1/4:114.14 ZTEOLT001/1/1/5/0/1/000000000000001111111154 XE"][60=60:000023493534453……][55=12,7][50=192.168.31.199]')
+    subparsers_4.add_argument("--message_type", "-mt", default='default',
+                              help='发送指定类型报文如  例: dhcptool v4 -s 192.168.31.134 -mt renew/release/decline/inform')
+
+    subparsers_4.add_argument("--iface", "-i", help='指定网卡   例: dhcptool v4 -s 192.168.31.134 -i eth1', default='eth0')
+    subparsers_4.add_argument("--debug", "-debug", help='调试日志   例: dhcptool v4 -s 192.168.31.134 -debug on/off', type=str, default='off')
+    subparsers_4.add_argument("--mac", "-mac", help='指定mac  例: dhcptool v4 -f 192.168.11.181 -mac 9a:cf:66:12:99:d1', default=None)
+    subparsers_4.add_argument("--sleep_time", "-st", type=int, default=0,
+                              help='分配完成后的阶段设置等待进入下一阶段  例: dhcptool v4 -f 192.168.11.181 -st 1 -mt renew/release/decline/inform')
 
 
 def parse_cmd_args_dhcp6():
@@ -44,22 +45,20 @@ def parse_cmd_args_dhcp6():
     解析dhcp6参数
     :return:
     """
-    subparsers_6.add_argument("--num", "-n", help="发包数量", default=1)
-    subparsers_6.add_argument("--options", "-o", help="自定义options",
-                              default=None)
+    subparsers_6.add_argument("--num", "-n", help="数量  例: dhcptool v6 -f 1000:0:0:31::135 -n 10", default=1)
+    subparsers_6.add_argument("--options", "-o", help="自定义options", default=None)
     subparsers_6.add_argument("--ipv6_src", "-src", help='指定ipv6源ip,例如: -src "1000::31:350:9640:be36:46f6"')
-    subparsers_6.add_argument("--message_type", "-mt", help='发送指定类型报文如：solicit,request,renew,release,decline',
-                              default='default')
-    subparsers_6.add_argument("--na_pd", "-np", help='输入项： na, pd,na/pd', default='na')
-    subparsers_6.add_argument("--debug", "-debug", help='查看详细请求过程,默认为 off, on', type=str, default='off')
-    subparsers_6.add_argument("--mac", "-mac", help='指定mac地址进行发流', default=None)
-    subparsers_6.add_argument("--multiprocessing", "-mp", default='master,192.168.31.134,8080', help='分布式测试配置')
-    subparsers_6.add_argument("--dhcp_server", "-s", help='tcpdump过滤条件，用于接收返回值过滤，必须指定发送方得mac地址,如:  -f "1000:0:0:30::1"')
-    subparsers_6.add_argument("--filter", "-f", help='tcpdump过滤条件，用于接收返回值过滤，必须指定发送方得mac地址,如:  -f "1000:0:0:30::1"',
-                              default=None)
-    subparsers_6.add_argument("--relay_forward", "-rf", type=str, help='配置中继地址, 默认为 None', default=None)
-    subparsers_6.add_argument("--sleep_time", "-st", type=int,
-                              help='在特定阶段 等待一段时间,支持完成ack后等待指定时间后执行下面的动作', default=0)
+    subparsers_6.add_argument("--message_type", "-mt", default='default',
+                              help='发送指定类型报文如  例: dhcptool v6 -f 1000:0:0:31::135 -mt renew/release/decline')
+    subparsers_6.add_argument("--na_pd", "-np", help='分类类型: dhcptool v6 -f 1000:0:0:31::135 -np na / pd / na/pd', default='na')
+    subparsers_6.add_argument("--debug", "-debug", help='调试日志   例: dhcptool v4 -f 1000:0:0:31::135 -debug on/off', type=str, default='off')
+    subparsers_6.add_argument("--mac", "-mac", help='指定mac  例: dhcptool v4 -f 1000:0:0:31::135 -mac 9a:cf:66:12:99:d1', default=None)
+
+    subparsers_6.add_argument("--dhcp_server", "-s", help='中继单播发包   例: dhcptool v4 -s 1000:0:0:31::135 -rf 1000:0:0:31::1')
+    subparsers_6.add_argument("--filter", "-f", help='DHCP服务器(广播)   例: dhcptool v4 -f 1000:0:0:31::135', default=None)
+    subparsers_6.add_argument("--relay_forward", "-rf", type=str, help='中继地址    例: dhcptool v4 -f 1000:0:0:31::135 -rf 1000:0:0:31::1', default=None)
+    subparsers_6.add_argument("--sleep_time", "-st", type=int, default=0,
+                              help='分配完成后的阶段设置等待进入下一阶段  例: dhcptool v4 -f 1000:0:0:31::135 -st 1 -mt renew/release/decline')
 
 
 def dhcp_main():
