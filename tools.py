@@ -11,6 +11,8 @@ import re
 import socket
 import subprocess
 from inspect import getmodule, stack
+
+from scapy.arch import get_if_hwaddr
 from scapy.layers.dhcp import DHCPTypes, DHCP, BOOTP
 from scapy.layers.dhcp6 import dhcp6types, DHCP6OptIAAddress, DHCP6OptRelayMsg, DHCP6OptIAPrefix
 from scapy.layers.inet import IP, UDP
@@ -51,7 +53,12 @@ class Tools:
             mac = Tools.mac_self_incrementing(args.get('mac'), global_var.get('tag'))
             mac = mac2str(mac)
         else:
-            mac = mac2str(RandMAC())
+            if args.get('filter') and len(args.get('filter').split('.')) == 4:
+                mac = get_if_hwaddr(args.get('iface'))
+                mac = Tools.mac_self_incrementing(mac, global_var.get('tag'))
+                mac = mac2str(mac)
+            else:
+                mac = mac2str(RandMAC())
         global_var.update({"generate_mac": mac})
         return mac
 
