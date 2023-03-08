@@ -77,17 +77,6 @@ class Pkt:
                 logs.error('没有接收到返回包！', ex)
             return res
 
-    def send_dhcp4_pkt_sniff(self):
-        pass
-        # debug = args.get('debug')
-        # Tools.print_formart(pkt, debug)
-        # res = srp1(pkt, verbose=0, timeout=self.timeout)
-        # try:
-        #     assert res
-        # except Exception as ex:
-        #     logs.error('没有接收到返回包！', ex)
-        # return res
-
 
 class Dhcp6Pkt(Pkt):
 
