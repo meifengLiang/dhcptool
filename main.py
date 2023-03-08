@@ -47,10 +47,10 @@ def parse_cmd_args_dhcp6():
     """
     subparsers_6.add_argument("--num", "-n", help="数量  例: dhcptool v6 -f 1000:0:0:31::135 -n 10", default=1)
     subparsers_6.add_argument("--options", "-o", help='填充options    例: 格式:dhcptool v6 -f 1000:0:0:31::135 -o [code]=[value]&[code]=[value] [dhcptool v4 -s 192.168.31.134 -o [16=1f3……&14=''][18="eth 2/1/4:114.14 ZTEOLT001/1/1/5/0/1/000000000000001111111154 XE"][60=60:000023493534453……][6=12,7][50=192.168.31.199]', default=None)
-    subparsers_6.add_argument("--ipv6_src", "-src", help='指定ipv6源ip,例如: -src "1000::31:350:9640:be36:46f6"')
+    subparsers_6.add_argument("--ipv6_src", "-src", help='指定ipv6源ip 例: dhcptool v6 -f 1000:0:0:31::135 -src 1000::31:350:9640:be36:46f6')
     subparsers_6.add_argument("--message_type", "-mt", default='default',
                               help='发送指定类型报文如  例: dhcptool v6 -f 1000:0:0:31::135 -mt renew/release/decline')
-    subparsers_6.add_argument("--na_pd", "-np", help='分类类型: dhcptool v6 -f 1000:0:0:31::135 -np na / pd / na/pd', default='na')
+    subparsers_6.add_argument("--na_pd", "-np", help='分配类型  例: dhcptool v6 -f 1000:0:0:31::135 -np na / pd / na/pd', default='na')
     subparsers_6.add_argument("--debug", "-debug", help='调试日志   例: dhcptool v4 -f 1000:0:0:31::135 -debug on/off', type=str, default='off')
     subparsers_6.add_argument("--mac", "-mac", help='指定mac  例: dhcptool v4 -f 1000:0:0:31::135 -mac 9a:cf:66:12:99:d1', default=None)
 
