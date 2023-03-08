@@ -43,8 +43,7 @@ class Pkt:
             filter = args.get('dhcp_server')
         debug = args.get('debug')
         Tools.print_formart(pkt, debug)
-        t = AsyncSniffer(iface=args.get('iface'), filter=f'port 547 and src host {filter}', count=1,
-                         timeout=self.timeout)
+        t = AsyncSniffer(iface=args.get('iface'), filter=f'port 547 and src host {filter}', count=1, timeout=self.timeout)
         t.start()
         sleep(10 / 1000)
         sendp(pkt, verbose=0)
