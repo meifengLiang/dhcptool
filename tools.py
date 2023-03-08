@@ -46,7 +46,6 @@ class Tools:
         """
         获取mac信息
         :return:
-
         """
         if args.get('mac') is not None:
             mac = Tools.mac_self_incrementing(args.get('mac'), global_var.get('tag'))
