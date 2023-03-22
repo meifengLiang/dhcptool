@@ -226,8 +226,7 @@ class Dhcp4Pkt(Pkt):
         if dict(options).get('requested_addr'):
             requested_addr_index = [i for i, d in enumerate(self.options_list) if d[0] == 'requested_addr'][0]
             self.options_list.pop(requested_addr_index)
-        for i in self.options_list:
-            options.append(i)
+        for i in self.options_list: options.append(i)
         make_pkt = self.ether_ip_udp_bootp / DHCP(options=options)
         return make_pkt
 
