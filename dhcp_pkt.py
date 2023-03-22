@@ -223,7 +223,8 @@ class Dhcp4Pkt(Pkt):
         else:
             yiaddr = pkt[BOOTP].yiaddr
             options.append(("requested_addr", yiaddr))
-        if dict(options).get('requested_addr'):
+
+        if dict(options).get('requested_addr') and 'requested_addr' in str(self.options_list):
             requested_addr_index = [i for i, d in enumerate(self.options_list) if d[0] == 'requested_addr'][0]
             self.options_list.pop(requested_addr_index)
         for i in self.options_list: options.append(i)
