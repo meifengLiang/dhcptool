@@ -43,7 +43,8 @@ class Pkt:
             filter = args.get('dhcp_server')
         debug = args.get('debug')
         Tools.print_formart(pkt, debug)
-        t = AsyncSniffer(iface=args.get('iface'), filter=f'port 547 and src host {filter}', count=1, timeout=self.timeout)
+        t = AsyncSniffer(iface=args.get('iface'), filter=f'port 547 and src host {filter}', count=1,
+                         timeout=self.timeout)
         t.start()
         sleep(10 / 1000)
         sendp(pkt, verbose=0)
@@ -61,7 +62,8 @@ class Pkt:
             filter = args.get('filter')
             debug = args.get('debug')
             Tools.print_formart(pkt, debug)
-            t = AsyncSniffer(iface=args.get('iface'), filter=f'port 67 and src host {filter}', count=1, timeout=self.timeout)
+            t = AsyncSniffer(iface=args.get('iface'), filter=f'port 67 and src host {filter}', count=1,
+                             timeout=self.timeout)
             t.start()
             sleep(10 / 1000)
             sendp(pkt, verbose=0, iface=args.get('iface'))
@@ -85,7 +87,8 @@ class Dhcp6Pkt(Pkt):
         if args.get('filter'):
             self.ether_ipv6_udp = self.ether / IPv6(src=Tools.get_local_ipv6(), dst='ff02::1:2') / self.udp
         else:
-            self.ether_ipv6_udp = self.ether / IPv6(src=Tools.get_local_ipv6(), dst=self.args.get('dhcp_server')) / self.udp
+            self.ether_ipv6_udp = self.ether / IPv6(src=Tools.get_local_ipv6(),
+                                                    dst=self.args.get('dhcp_server')) / self.udp
         self.duid = DUID_LLT(lladdr=self.mac, timeval=self.xid)
         self.solicit = DHCP6_Solicit(trid=xid)
         self.release = DHCP6_Release(trid=xid)
@@ -196,21 +199,44 @@ class Dhcp4Pkt(Pkt):
         self.make_options = Dhcp4Options(self.args)
         if args.get('filter'):
             self.bootp = BOOTP(chaddr=self.mac, giaddr='0.0.0.0', xid=random.randint(1, 900000000), flags=1)
-            self.ether_ip_udp_bootp = Ether(src=str2mac(self.mac), dst='ff:ff:ff:ff:ff:ff') / IP(src='0.0.0.0', dst='255.255.255.255') / UDP(sport=67, dport=67) / self.bootp
+            self.ether_ip_udp_bootp = Ether(src=str2mac(self.mac), dst='ff:ff:ff:ff:ff:ff') / IP(src='0.0.0.0',
+                                                                                                 dst='255.255.255.255') / UDP(
+                sport=67, dport=67) / self.bootp
         else:
-            self.bootp = BOOTP(chaddr=self.mac, giaddr=self.args.get('relay_forward'), xid=random.randint(1, 900000000), flags=0)
-            self.ether_ip_udp_bootp = Ether() / IP(dst=self.args.get('dhcp_server')) / UDP(sport=67, dport=67) / self.bootp
+            self.bootp = BOOTP(chaddr=self.mac, giaddr=self.args.get('relay_forward'), xid=random.randint(1, 900000000),
+                               flags=0)
+            self.ether_ip_udp_bootp = Ether() / IP(dst=self.args.get('dhcp_server')) / UDP(sport=67,
+                                                                                           dport=67) / self.bootp
 
         self.options_list = self.make_options.make_options_list()
+
+    def make_pkts(self, pkt, message_type):
+        """
+        组装  discover/request/decline/inform报文，
+        :param pkt: 接收到的报文
+        :param message_type: 请求类型
+        :return:
+        """
+        options = [("message-type", message_type)]
+        if message_type == 'discover':
+            pass
+        else:
+            yiaddr = pkt[BOOTP].yiaddr
+            options.append(("requested_addr", yiaddr))
+        if dict(options).get('requested_addr'):
+            requested_addr_index = [i for i, d in enumerate(self.options_list) if d[0] == 'requested_addr'][0]
+            self.options_list.pop(requested_addr_index)
+        for i in self.options_list:
+            options.append(i)
+        make_pkt = self.ether_ip_udp_bootp / DHCP(options=options)
+        return make_pkt
 
     def dhcp4_discover(self):
         """
         制作 discover包
         :return:
         """
-        options = [("message-type", "discover")]
-        for i in self.options_list: options.append(i)
-        discover_pkt = self.ether_ip_udp_bootp / DHCP(options=options)
+        discover_pkt = self.make_pkts(None, "discover")
         return discover_pkt
 
     def dhcp4_offer(self):
@@ -221,12 +247,8 @@ class Dhcp4Pkt(Pkt):
         制作 request包
         :return:
         """
-        options = [("message-type", "request")]
         offer_pkt = pkt_result.get('dhcp4_offer').get(timeout=self.timeout)
-        yiaddr = offer_pkt[BOOTP].yiaddr
-        options.append(("requested_addr", yiaddr))
-        for i in self.options_list: options.append(i)
-        request_pkt = self.ether_ip_udp_bootp / DHCP(options=options)
+        request_pkt = self.make_pkts(offer_pkt, "request")
         return request_pkt
 
     def dhcp4_ack(self):
@@ -237,12 +259,8 @@ class Dhcp4Pkt(Pkt):
         制作 decline包
         :return:
         """
-        options = [("message-type", "decline")]
         ack_pkt = pkt_result.get('dhcp4_ack').get(timeout=self.timeout)
-        yiaddr = ack_pkt[BOOTP].yiaddr
-        options.append(("requested_addr", yiaddr))
-        for i in self.options_list: options.append(i)
-        decline_pkt = self.ether_ip_udp_bootp / DHCP(options=options)
+        decline_pkt = self.make_pkts(ack_pkt, "decline")
         return decline_pkt
 
     def dhcp4_release(self):
@@ -250,12 +268,8 @@ class Dhcp4Pkt(Pkt):
         制作 release包
         :return:
         """
-        options = [("message-type", "release")]
         ack_pkt = pkt_result.get('dhcp4_ack').get(timeout=self.timeout)
-        yiaddr = ack_pkt[BOOTP].yiaddr
-        options.append(("requested_addr", yiaddr))
-        for i in self.options_list: options.append(i)
-        release_pkt = self.ether_ip_udp_bootp / DHCP(options=options)
+        release_pkt = self.make_pkts(ack_pkt, "release")
         return release_pkt
 
     def dhcp4_inform(self):
@@ -263,10 +277,6 @@ class Dhcp4Pkt(Pkt):
         制作 inform包
         :return:
         """
-        options = [("message-type", "inform")]
         ack_pkt = pkt_result.get('dhcp4_ack').get(timeout=self.timeout)
-        yiaddr = ack_pkt[BOOTP].yiaddr
-        options.append(("requested_addr", yiaddr))
-        for i in self.options_list: options.append(i)
-        inform_pkt = self.ether_ip_udp_bootp / DHCP(options=options)
+        inform_pkt = self.make_pkts(ack_pkt, "inform")
         return inform_pkt

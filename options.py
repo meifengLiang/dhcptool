@@ -38,7 +38,7 @@ class Dhcp4Options(Options):
         self.args = args
         super(Dhcp4Options, self).__init__(args=self.args)
 
-    def make_options_list(self):
+    def make_options_list(self) -> object:
         """
         制作 options
         :return:
