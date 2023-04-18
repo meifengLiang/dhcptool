@@ -136,6 +136,9 @@ class Tools:
                     elif i[DHCP].options[0][1] == 5:
                         pkt_result.get('dhcp4_ack').put(i)
                         Tools.print_formart(i, debug)
+                    elif i[DHCP].options[0][1] == 6:
+                        pkt_result.get('dhcp4_nak').put(i)
+                        Tools.print_formart(i, debug)
                 else:
                     logs.info('没有监听到 server 返回 结果！,请检查是否有多个DHCP server影响监听结果')
             else:

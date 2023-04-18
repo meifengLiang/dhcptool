@@ -38,6 +38,8 @@ class Dhcp4Controller(Dhcp4Pkt):
                     self.send_discover_offer_request_ack_release()
                 elif message_type == 'inform':
                     self.send_discover_offer_request_ack_inform()
+                elif message_type == 'nak':
+                    self.send_discover_offer_request_nak()
                 else:
                     self.send_discover_offer_request_ack_decline()
             except:
@@ -58,6 +60,20 @@ class Dhcp4Controller(Dhcp4Pkt):
         Tools.analysis_results(pkts_list=res, args=self.args)
 
         request_pkt = self.dhcp4_request()
+        ack_pkt = self.send_dhcp4_pkt(request_pkt, args=self.args)
+        Tools.analysis_results(pkts_list=ack_pkt, args=self.args)
+
+    def send_discover_offer_request_nak(self):
+        """
+        发送  dhcp4 完整分配流程
+        :return:
+        """
+        self.__init__(self.args)
+        discover_pkt = self.dhcp4_discover()
+        res = self.send_dhcp4_pkt(discover_pkt, args=self.args)
+        Tools.analysis_results(pkts_list=res, args=self.args)
+
+        request_pkt = self.dhcp4_exception_request()
         ack_pkt = self.send_dhcp4_pkt(request_pkt, args=self.args)
         Tools.analysis_results(pkts_list=ack_pkt, args=self.args)
 

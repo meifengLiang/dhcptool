@@ -31,7 +31,7 @@ def parse_cmd_args_dhcp4():
     subparsers_4.add_argument("--options", "-o",
                               help='填充options    例: 格式:dhcptool v4 -s 192.168.31.134 -o [code]=[value]&[code]=[value] [dhcptool v4 -s 192.168.31.134 -o [12=yamu&7=1.1.1.1][82="eth 2/1/4:114.14 ZTEOLT001/1/1/5/0/1/000000000000001111111154 XE"][60=60:000023493534453……][55=12,7][50=192.168.31.199]')
     subparsers_4.add_argument("--message_type", "-mt", default='default',
-                              help='发送指定类型报文如  例: dhcptool v4 -s 192.168.31.134 -mt renew/release/decline/inform')
+                              help='发送指定类型报文如  例: dhcptool v4 -s 192.168.31.134 -mt renew/release/decline/inform/nak')
 
     subparsers_4.add_argument("--iface", "-i", help='指定网卡   例: dhcptool v4 -s 192.168.31.134 -i eth1', default='eth0')
     subparsers_4.add_argument("--debug", "-debug", help='调试日志   例: dhcptool v4 -s 192.168.31.134 -debug on/off', type=str, default='off')

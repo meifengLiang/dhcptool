@@ -251,6 +251,11 @@ class Dhcp4Pkt(Pkt):
         request_pkt = self.make_pkts(offer_pkt, "request")
         return request_pkt
 
+    def dhcp4_exception_request(self):
+        options = [('message-type', 'request'), ('requested_addr', '192.0.0.1'), 'end']
+        request_pkt = self.ether_ip_udp_bootp / DHCP(options=options)
+        return request_pkt
+
     def dhcp4_ack(self):
         pass
 

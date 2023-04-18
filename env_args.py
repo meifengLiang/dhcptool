@@ -42,6 +42,7 @@ pkt_result = {
     #     },
     "dhcp4_offer": queue.Queue(),
     "dhcp4_ack": queue.Queue(),
+    "dhcp4_nak": queue.Queue(),
 }
 
 logs = Logings()
