@@ -253,6 +253,7 @@ class Dhcp4Pkt(Pkt):
 
     def dhcp4_exception_request(self):
         options = [('message-type', 'request'), ('requested_addr', '192.0.0.1'), 'end']
+        for i in self.options_list: options.append(i)
         request_pkt = self.ether_ip_udp_bootp / DHCP(options=options)
         return request_pkt
 
@@ -284,4 +285,14 @@ class Dhcp4Pkt(Pkt):
         """
         ack_pkt = pkt_result.get('dhcp4_ack').get(timeout=self.timeout)
         inform_pkt = self.make_pkts(ack_pkt, "inform")
+        return inform_pkt
+
+    def dhcp4_custom_inform(self):
+        """
+        制作 inform包
+        :return:
+        """
+        options = [('message-type', 'inform')]
+        for i in self.options_list: options.append(i)
+        inform_pkt = self.ether_ip_udp_bootp / DHCP(options=options)
         return inform_pkt

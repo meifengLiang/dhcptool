@@ -38,6 +38,7 @@ def parse_cmd_args_dhcp4():
     subparsers_4.add_argument("--mac", "-mac", help='指定mac  例: dhcptool v4 -f 192.168.11.181 -mac 9a:cf:66:12:99:d1', default=None)
     subparsers_4.add_argument("--sleep_time", "-st", type=int, default=0,
                               help='分配完成后的阶段设置等待进入下一阶段  例: dhcptool v4 -f 192.168.11.181 -st 1 -mt renew/release/decline/inform')
+    subparsers_4.add_argument("--single", "-single", help='发送单个报文  例: dhcptool v4 -s 192.168.11.181 -mt inform -single -o 50=192.168.31.13', action='store_true')
 
 
 def parse_cmd_args_dhcp6():
@@ -52,13 +53,13 @@ def parse_cmd_args_dhcp6():
                               help='发送指定类型报文如  例: dhcptool v6 -f 1000:0:0:31::135 -mt renew/release/decline')
     subparsers_6.add_argument("--na_pd", "-np", help='分配类型  例: dhcptool v6 -f 1000:0:0:31::135 -np na / pd / na/pd', default='na')
     subparsers_6.add_argument("--debug", "-debug", help='调试日志   例: dhcptool v4 -f 1000:0:0:31::135 -debug on/off', type=str, default='off')
-    subparsers_6.add_argument("--mac", "-mac", help='指定mac  例: dhcptool v4 -f 1000:0:0:31::135 -mac 9a:cf:66:12:99:d1', default=None)
+    subparsers_6.add_argument("--mac", "-mac", help='指定mac  例: dhcptool v6 -f 1000:0:0:31::135 -mac 9a:cf:66:12:99:d1', default=None)
 
-    subparsers_6.add_argument("--dhcp_server", "-s", help='中继单播发包   例: dhcptool v4 -s 1000:0:0:31::135 -rf 1000:0:0:31::1')
-    subparsers_6.add_argument("--filter", "-f", help='DHCP服务器(广播)   例: dhcptool v4 -f 1000:0:0:31::135', default=None)
-    subparsers_6.add_argument("--relay_forward", "-rf", type=str, help='中继地址    例: dhcptool v4 -f 1000:0:0:31::135 -rf 1000:0:0:31::1', default=None)
+    subparsers_6.add_argument("--dhcp_server", "-s", help='中继单播发包   例: dhcptool v6 -s 1000:0:0:31::135 -rf 1000:0:0:31::1')
+    subparsers_6.add_argument("--filter", "-f", help='DHCP服务器(广播)   例: dhcptool v6 -f 1000:0:0:31::135', default=None)
+    subparsers_6.add_argument("--relay_forward", "-rf", type=str, help='中继地址    例: dhcptool v6 -f 1000:0:0:31::135 -rf 1000:0:0:31::1', default=None)
     subparsers_6.add_argument("--sleep_time", "-st", type=int, default=0,
-                              help='分配完成后的阶段设置等待进入下一阶段  例: dhcptool v4 -f 1000:0:0:31::135 -st 1 -mt renew/release/decline')
+                              help='分配完成后的阶段设置等待进入下一阶段  例: dhcptool v6 -f 1000:0:0:31::135 -st 1 -mt renew/release/decline')
 
 
 def dhcp_main():
