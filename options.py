@@ -89,7 +89,7 @@ class Dhcp4Options(Options):
         value_list = [int(i) for i in value.split(',')]
         return 'param_req_list', value_list
 
-    def option_50(self, value):
+    def option_50(self, value='192.168.0.1'):
         return 'requested_addr', value
 
 
