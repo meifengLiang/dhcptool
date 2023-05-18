@@ -247,7 +247,12 @@ class Dhcp4Pkt(Pkt):
         制作 request包
         :return:
         """
-        offer_pkt = pkt_result.get('dhcp4_offer').get(timeout=self.timeout)
+        if self.args.get('single'):
+            options = [('message-type', 'request')]
+            for i in self.options_list: options.append(i)
+            offer_pkt = self.ether_ip_udp_bootp / DHCP(options=options)
+        else:
+            offer_pkt = pkt_result.get('dhcp4_offer').get(timeout=self.timeout)
         request_pkt = self.make_pkts(offer_pkt, "request")
         return request_pkt
 

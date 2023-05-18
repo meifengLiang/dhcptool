@@ -41,6 +41,8 @@ class Dhcp4Controller(Dhcp4Pkt):
                         self.send_inform()
                     else:
                         self.send_discover_offer_request_ack_inform()
+                elif message_type == 'request':
+                    self.send_request()
                 elif message_type == 'nak':
                     self.send_discover_offer_request_nak()
                 else:
@@ -128,5 +130,10 @@ class Dhcp4Controller(Dhcp4Pkt):
 
     def send_inform(self):
         inform_pkt = self.dhcp4_custom_inform()
-        self.send_dhcp4_pkt(inform_pkt, args=self.args)
-        Tools.analysis_results(pkts_list=inform_pkt, args=self.args)
+        res = self.send_dhcp4_pkt(inform_pkt, args=self.args)
+        Tools.analysis_results(pkts_list=res, args=self.args)
+
+    def send_request(self):
+        request_pkt = self.dhcp4_request()
+        res = self.send_dhcp4_pkt(request_pkt, args=self.args)
+        Tools.analysis_results(pkts_list=res, args=self.args)
