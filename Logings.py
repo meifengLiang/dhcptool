@@ -4,56 +4,43 @@
 # @File    : Logings.py
 # @Software: PyCharm
 # @desc    :
-import sys
-from loguru import logger
-logger.remove()
+
+import logging
 
 
-class Logings:
-    __instance = None
+class Logings(logging.Logger):
+    def __init__(self, name, level=logging.INFO, file=None):
+        """
 
-    logger.add('dhcp_{time}.log',
-               retention=3,
-               encoding='utf-8',
-               backtrace=True,  # 回溯
-               diagnose=True,  # 诊断
-               )
-    logger.add(sys.stdout,  # 指定文件
-               format="<green>{time:YYYYMMDD HH:mm:ss}</green> | "  # 颜色>时间
-                      "<level>{message}</level>",  # 日志内容
-               level="DEBUG"
-               )
+        :param name: 日志名字
+        :param level: 级别
+        :param file: 日志文件名称
+        """
+        # 继承logging模块中的Logger类，因为里面实现了各种各样的方法，很全面，但是初始化很简单
+        # 所以我们需要继承后把初始化再优化下，变成自己想要的。
+        super().__init__(name, level)
 
-    def __new__(cls, *args, **kwargs):
-        if not cls.__instance:
-            cls.__instance = super(Logings, cls).__new__(cls, *args, **kwargs)
-        return cls.__instance
+        # 设置日志格式
+        fmt = "%(asctime)s | %(message)s"
+        formatter = logging.Formatter(fmt)
 
-    def info(self, msg, *args, **kwargs):
-        return logger.info(msg, *args, **kwargs)
-
-    def debug(self, msg, *args, **kwargs):
-        return logger.debug(msg, *args, **kwargs)
-
-    def warning(self, msg, *args, **kwargs):
-        return logger.warning(msg, *args, **kwargs)
-
-    def error(self, msg, *args, **kwargs):
-        return logger.error(msg, *args, **kwargs)
-
-    def success(self, msg, *args, **kwargs):
-        return logger.success(msg, *args, **kwargs)
-
-    def stop(self, msg, *args, **kwargs):
-        return logger.stop(msg, *args, **kwargs)
-
-    def start(self, msg, *args, **kwargs):
-        return logger.start(msg, *args, **kwargs)
-
-    def exception(self, msg, *args, exc_info=True, **kwargs):
-        return logger.exception(msg, *args, exc_info=True, **kwargs)
+        # 文件输出渠道
+        if file:
+            handle2 = logging.FileHandler(file, encoding="utf-8")
+            handle2.setFormatter(formatter)
+            self.addHandler(handle2)
+        # 控制台渠道
+        else:
+            handle1 = logging.StreamHandler()
+            handle1.setFormatter(formatter)
+            self.addHandler(handle1)
 
 
-if __name__ == '__main__':
-    l = Logings()
-    l.debug('------------')
+# # 因为一个项目的日志都是写入到一个日志文件的，所以可以把name，file这两个参数写死，直接实例化
+# # 后期每个模块调用就不用实例化，导入可以直接使用
+# logger = MyLogging("mylog", file="my_log.log")
+#
+# if __name__ == '__main__':
+#     mlogger = MyLogging("abc")
+#     mlogger.info("封装好的日志类，console")
+#     logger.info("封装好的日志，文件渠道测试")
