@@ -137,3 +137,9 @@ class Dhcp4Controller(Dhcp4Pkt):
         request_pkt = self.dhcp4_request()
         res = self.send_dhcp4_pkt(request_pkt, args=self.args)
         Tools.analysis_results(pkts_list=res, args=self.args)
+
+    def send_discover(self):
+        discover_pkt = self.dhcp4_discover()
+        res = self.send_dhcp4_pkt(discover_pkt, args=self.args)
+        Tools.analysis_results(pkts_list=res, args=self.args)
+
