@@ -250,11 +250,12 @@ class Dhcp4Pkt(Pkt):
         if self.args.get('single'):
             options = [('message-type', 'request')]
             for i in self.options_list: options.append(i)
-            offer_pkt = self.ether_ip_udp_bootp / DHCP(options=options)
+            request_pkt = self.ether_ip_udp_bootp / DHCP(options=options)
+            return request_pkt
         else:
             offer_pkt = pkt_result.get('dhcp4_offer').get(timeout=self.timeout)
-        request_pkt = self.make_pkts(offer_pkt, "request")
-        return request_pkt
+            request_pkt = self.make_pkts(offer_pkt, "request")
+            return request_pkt
 
     def dhcp4_exception_request(self):
         options = [('message-type', 'request'), ('requested_addr', '192.0.0.1'), 'end']
