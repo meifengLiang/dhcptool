@@ -43,6 +43,8 @@ class Dhcp4Controller(Dhcp4Pkt):
                         self.send_discover_offer_request_ack_inform()
                 elif message_type == 'request':
                     self.send_request()
+                elif message_type == 'discover':
+                    self.send_discover()
                 elif message_type == 'nak':
                     self.send_discover_offer_request_nak()
                 else:
