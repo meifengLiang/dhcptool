@@ -45,4 +45,4 @@ pkt_result = {
     "dhcp4_nak": queue.Queue(),
 }
 
-logs = Logings("dhcp")
+logs = Logings("DHCP")

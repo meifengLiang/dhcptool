@@ -44,7 +44,7 @@ class Dhcp6Controller(Dhcp6Pkt):
             except AssertionError as ex:
                 logs.error('返回包未包含分配ip！', ex)
 
-            print('-' * 100)
+            print('-' * 60)
             pkt_result.get('dhcp6_reply').queue.clear()
         logs.info(json.dumps(summary_result, indent=4))
 

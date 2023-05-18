@@ -50,7 +50,7 @@ class Dhcp4Controller(Dhcp4Pkt):
             except:
                 pass
 
-            print('-' * 100)
+            print('-' * 60)
             pkt_result.get('dhcp4_ack').queue.clear()
         logs.info(json.dumps(summary_result, indent=4))
 

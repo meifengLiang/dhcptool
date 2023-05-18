@@ -30,10 +30,9 @@ class Logings(logging.Logger):
             handle2.setFormatter(formatter)
             self.addHandler(handle2)
         # 控制台渠道
-        else:
-            handle1 = logging.StreamHandler()
-            handle1.setFormatter(formatter)
-            self.addHandler(handle1)
+        handle1 = logging.StreamHandler()
+        handle1.setFormatter(formatter)
+        self.addHandler(handle1)
 
 
 # # 因为一个项目的日志都是写入到一个日志文件的，所以可以把name，file这两个参数写死，直接实例化
