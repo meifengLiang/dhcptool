@@ -76,7 +76,7 @@ class Pkt:
             try:
                 assert res
             except Exception as ex:
-                logs.error('没有接收到返回包！', ex)
+                logs.error('没有接收到返回包！')
             return res
 
 

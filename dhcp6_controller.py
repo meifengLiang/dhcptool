@@ -40,9 +40,9 @@ class Dhcp6Controller(Dhcp6Pkt):
                 elif message_type == 'release':
                     self.send_solicit_advertise_request_reply_release()
             except Empty as ex:
-                logs.error('没有接收到返回包！', ex)
+                logs.error('没有接收到返回包！')
             except AssertionError as ex:
-                logs.error('返回包未包含分配ip！', ex)
+                logs.error('返回包未包含分配ip！')
 
             print('-' * 60)
             pkt_result.get('dhcp6_reply').queue.clear()
