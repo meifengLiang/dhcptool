@@ -86,9 +86,9 @@ parser = argparse.ArgumentParser(description="DHCP发包,同时支持ipv4,ipv6",
 parser.add_argument("--version", "-v", help="查看dhcptool版本信息", action='version', version=Tools.get_version())
 subparsers = parser.add_subparsers(
     help='v4 [s|f] [debug] [single] [renew|release|decline|inform|nak] [mac] [o] [n] [st] [np]')
-subparsers_4 = subparsers.add_parser('v4', help='v4')
+subparsers_4 = subparsers.add_parser('v4', help='DHCPv4 发包帮助信息')
 subparsers_4.set_defaults(func=exec_dhcp4)
-subparsers_6 = subparsers.add_parser('v6', help='DHCP6 发包帮助信息')
+subparsers_6 = subparsers.add_parser('v6', help='DHCPv6 发包帮助信息')
 subparsers_6.set_defaults(func=exec_dhcp6)
 parse_cmd_args_dhcp4()
 parse_cmd_args_dhcp6()
