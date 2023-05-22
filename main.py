@@ -68,8 +68,8 @@ def exec_dhcp4(args):
     :param args:
     :return:
     """
-    dhcp4_controldler = Dhcp4Controller(args)
-    dhcp4_controldler.run()
+    dhcp4_controller = Dhcp4Controller(args)
+    dhcp4_controller.run()
 
 
 def exec_dhcp6(args):
@@ -78,8 +78,8 @@ def exec_dhcp6(args):
     :param args:
     :return:
     """
-    dhcp6_controldler = Dhcp6Controller(args)
-    dhcp6_controldler.run()
+    dhcp6_controller = Dhcp6Controller(args)
+    dhcp6_controller.run()
 
 
 parser = argparse.ArgumentParser(description="DHCP发包,同时支持ipv4,ipv6", conflict_handler='resolve')
