@@ -16,7 +16,7 @@ class Options:
         self.args = args
 
     def parse_dhcp4_options(self):
-        options_list = self.args.get('options')
+        options_list = self.args.options
         if options_list == None:
             return None
         else:
@@ -24,7 +24,7 @@ class Options:
             return options_list
 
     def parse_dhcp6_options(self):
-        options_list = self.args.get('options')
+        options_list = self.args.options
         if options_list == None:
             return None
         else:

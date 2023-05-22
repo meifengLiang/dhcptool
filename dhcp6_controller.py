@@ -23,26 +23,24 @@ class Dhcp6Controller(Dhcp6Pkt):
         执行 发包测试入口
         :return:
         """
-        message_type = self.args.get('message_type')
-
         for i in dhcp6types.values():
             summary_result[i] = 0
 
-        for i in range(int(self.args.get('num'))):
+        for i in range(int(self.args.num)):
             global_var['tag'] = i
             try:
-                if message_type == 'default':
-                    self.send_solicit_advertise_request_reply()
-                elif message_type == 'renew':
+                if self.args.renew:
                     self.send_solicit_advertise_request_reply_renew()
-                elif message_type == 'decline':
-                    self.send_solicit_advertise_request_reply_decline()
-                elif message_type == 'release':
+                elif self.args.release:
                     self.send_solicit_advertise_request_reply_release()
+                elif self.args.decline:
+                    self.send_solicit_advertise_request_reply_decline()
+                else:
+                    self.send_solicit_advertise_request_reply()
             except Empty as ex:
-                logs.error('没有接收到返回包！')
+                logs.info('没有接收到返回包！')
             except AssertionError as ex:
-                logs.error('返回包未包含分配ip！')
+                logs.info('返回包未包含分配ip！')
 
             print('-' * 60)
             pkt_result.get('dhcp6_reply').queue.clear()
@@ -69,7 +67,7 @@ class Dhcp6Controller(Dhcp6Pkt):
         """
         self.send_solicit_advertise_request_reply()
         renew_pkt = self.dhcp6_renew()
-        Tools.rate_print('租约更新', self.args.get('sleep_time'))
+        Tools.rate_print('租约更新', self.args.sleep_time)
         res = self.send_dhcp6_pkt(renew_pkt, args=self.args)
         Tools.analysis_results(pkts_list=res, args=self.args)
 
@@ -80,7 +78,7 @@ class Dhcp6Controller(Dhcp6Pkt):
         """
         self.send_solicit_advertise_request_reply()
         release_pkt = self.dhcp6_release()
-        Tools.rate_print('租约释放', self.args.get('sleep_time'))
+        Tools.rate_print('租约释放', self.args.sleep_time)
         res = self.send_dhcp6_pkt(release_pkt, args=self.args)
         Tools.analysis_results(pkts_list=res, args=self.args)
 
@@ -91,6 +89,6 @@ class Dhcp6Controller(Dhcp6Pkt):
         """
         self.send_solicit_advertise_request_reply()
         decline_pkt = self.dhcp6_decline()
-        Tools.rate_print('模拟冲突', self.args.get('sleep_time'))
+        Tools.rate_print('模拟冲突', self.args.sleep_time)
         res = self.send_dhcp6_pkt(decline_pkt, args=self.args)
         Tools.analysis_results(pkts_list=res, args=self.args)

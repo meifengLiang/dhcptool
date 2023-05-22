@@ -5,6 +5,8 @@
 # @Software: PyCharm
 # @desc    :
 import json
+from queue import Empty
+
 from scapy.layers.dhcp import DHCPTypes
 from dhcp_pkt import Dhcp4Pkt
 from env_args import summary_result, logs, pkt_result, global_var
@@ -22,35 +24,34 @@ class Dhcp4Controller(Dhcp4Pkt):
         执行 发包测试入口
         :return:
         """
-        message_type = self.args.get('message_type')
-
         for i in DHCPTypes.values():
             summary_result[i] = 0
 
-        for i in range(int(self.args.get('num'))):
+        for i in range(int(self.args.num)):
             global_var['tag'] = i
             try:
-                if message_type == 'default':
-                    self.send_discover_offer_request_ack()
-                elif message_type == 'renew':
+                if self.args.renew:
                     self.send_discover_offer_request_ack_renew()
-                elif message_type == 'release':
+                elif self.args.release:
                     self.send_discover_offer_request_ack_release()
-                elif message_type == 'inform':
-                    if self.args.get('single'):
-                        self.send_inform()
-                    else:
-                        self.send_discover_offer_request_ack_inform()
-                elif message_type == 'request':
+                elif self.args.inform:
+                    self.send_inform() if self.args.single else self.send_discover_offer_request_ack_inform()
+                elif self.args.request:
                     self.send_request()
-                elif message_type == 'discover':
+                elif self.args.discover:
                     self.send_discover()
-                elif message_type == 'nak':
+                elif self.args.nak:
                     self.send_discover_offer_request_nak()
-                else:
+                elif self.args.decline:
                     self.send_discover_offer_request_ack_decline()
-            except:
-                pass
+                else:
+                    self.send_discover_offer_request_ack()
+            except Empty as ex:
+                logs.info('没有接收到返回包！')
+            except AssertionError as ex:
+                logs.info('返回包未包含分配ip！')
+            except Exception as ex:
+                logs.info(f"错误: {ex}")
 
             print('-' * 60)
             pkt_result.get('dhcp4_ack').queue.clear()
@@ -96,7 +97,7 @@ class Dhcp4Controller(Dhcp4Pkt):
         request_pkt = self.dhcp4_request()
         ack_pkt = self.send_dhcp4_pkt(request_pkt, args=self.args)
         Tools.analysis_results(pkts_list=ack_pkt, args=self.args)
-        Tools.rate_print('租约更新', self.args.get('sleep_time'))
+        Tools.rate_print('租约更新', self.args.sleep_time)
         ack_pkt = self.send_dhcp4_pkt(request_pkt, args=self.args)
         Tools.analysis_results(pkts_list=ack_pkt, args=self.args)
 
@@ -107,7 +108,7 @@ class Dhcp4Controller(Dhcp4Pkt):
         """
         self.send_discover_offer_request_ack()
         decline_pkt = self.dhcp4_decline()
-        Tools.rate_print('模拟冲突', self.args.get('sleep_time'))
+        Tools.rate_print('模拟冲突', self.args.sleep_time)
         self.send_dhcp4_pkt(decline_pkt, args=self.args)
 
     def send_discover_offer_request_ack_release(self):
@@ -117,7 +118,7 @@ class Dhcp4Controller(Dhcp4Pkt):
         """
         self.send_discover_offer_request_ack()
         release_pkt = self.dhcp4_release()
-        Tools.rate_print('租约释放', self.args.get('sleep_time'))
+        Tools.rate_print('租约释放', self.args.sleep_time)
         self.send_dhcp4_pkt(release_pkt, args=self.args)
 
     def send_discover_offer_request_ack_inform(self):
@@ -144,4 +145,3 @@ class Dhcp4Controller(Dhcp4Pkt):
         discover_pkt = self.dhcp4_discover()
         res = self.send_dhcp4_pkt(discover_pkt, args=self.args)
         Tools.analysis_results(pkts_list=res, args=self.args)
-

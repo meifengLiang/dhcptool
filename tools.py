@@ -10,6 +10,7 @@ import json
 import re
 import socket
 import subprocess
+from argparse import Namespace
 from inspect import getmodule, stack
 
 from scapy.arch import get_if_hwaddr
@@ -44,17 +45,17 @@ class Tools:
         return mac_address
 
     @staticmethod
-    def get_mac(args: dict = None):
+    def get_mac(args: Namespace = None):
         """
         获取mac信息
         :return:
         """
-        if args.get('mac') is not None:
-            mac = Tools.mac_self_incrementing(args.get('mac'), global_var.get('tag'))
+        if args.mac is not None:
+            mac = Tools.mac_self_incrementing(args.mac, global_var.get('tag'))
             mac = mac2str(mac)
         else:
-            if args.get('filter') and len(args.get('filter').split('.')) == 4:
-                mac = get_if_hwaddr(args.get('iface'))
+            if args.filter and len(args.filter.split('.')) == 4:
+                mac = get_if_hwaddr(args.iface)
                 mac = Tools.mac_self_incrementing(mac, global_var.get('tag'))
                 mac = mac2str(mac)
             else:
@@ -93,19 +94,20 @@ class Tools:
         local_ipv4 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         local_ipv4.connect(('8.8.8.8', 80))
         local_ipv4 = local_ipv4.getsockname()[0]
-        logs.info(f"获取本机IP:\t{local_ipv4}")
+
+
         return local_ipv4
 
     @staticmethod
     def get_local_ipv6():
         # 获取本机ipv6
-        local_ipv6 = subprocess.Popen("ip -6 address show | grep inet6 | awk '{print $2}' | cut -d'/' -f1",
-                                      shell=True, stdout=subprocess.PIPE)
-        local_ipv6 = str(local_ipv6.stdout.readlines()[1], encoding='utf-8').strip('\n')
+        local_ipv6 = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
+        local_ipv6.connect(('2001:da8:ff:305:20c:29ff:fe1f:a92a', 80))
+        local_ipv6 = local_ipv6.getsockname()[0]
         return local_ipv6
 
     @staticmethod
-    def analysis_results(pkts_list, DHCPv6=None, args: dict = None, call_name=None):
+    def analysis_results(pkts_list, DHCPv6=None, args: Namespace = None, call_name=None):
         """
         解析结果并存入队列
         :param args:
@@ -114,17 +116,13 @@ class Tools:
         :param filter:
         :return:
         """
-        # if args.get('dhcp_server') == 'ff02::1:2':
-        #     filter = args.get('filter')
-        # else:
-        #     filter = args.get('dhcp_server')
 
-        if args.get('filter'):
-            filter = args.get('filter')
+
+        if args.filter:
+            filter = args.filter
         else:
-            filter = args.get('dhcp_server')
-        # filter = args.get('dhcp_server')
-        debug = args.get('debug')
+            filter = args.dhcp_server
+        debug = args.debug
         call_func_name = getmodule(stack()[1][0])
         call_mod = call_func_name.__name__
         for i in pkts_list:
@@ -174,7 +172,7 @@ class Tools:
                     logs.info('没有监听到 server 返回 结果！,请检查是否有多个DHCP server影响监听结果')
 
     @staticmethod
-    def print_formart(pkt, level='off'):
+    def print_formart(pkt, debug):
         """
         格式化打印
         :param pkt:
@@ -182,7 +180,9 @@ class Tools:
         :return:
         """
         response_dict = {}
-        if level == 'off':
+        if debug:
+            logs.info(str(pkt.show()))
+        else:
             replx = '(\/)|(:dhcpv6_server)|(:bootps)|(DHCP6OptClientId)|(:dhcpv6_client)|(DHCP6OptServerId)|' \
                     '(DHCP6OptIA_NA)|(DHCP6OptIA_PD)|(DHCP6OptStatusCode)|(DHCP6OptRelayMsg)'
             txt, n = re.subn(replx, '', pkt.summary())
@@ -213,8 +213,6 @@ class Tools:
                     mac, response_dict.get('addr') or '', response_dict.get('prefix') or '',
                          response_dict.get('info') or '')
             logs.info(content_format)
-        else:
-            logs.info(str(pkt.show()))
         Tools.record_pkt_num(pkt)
 
     @staticmethod

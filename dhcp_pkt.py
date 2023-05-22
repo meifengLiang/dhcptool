@@ -5,6 +5,7 @@
 # @Software: PyCharm
 # @desc    :
 import random
+from argparse import Namespace
 from time import sleep
 from scapy.layers.dhcp import BOOTP, DHCP
 from scapy.layers.dhcp6 import DHCP6_Solicit, DHCP6_Release, DHCP6OptClientId, DHCP6OptIA_NA, DHCP6OptIA_PD, \
@@ -30,20 +31,20 @@ class Pkt:
         self.mac = Tools.get_mac(self.args)
         self.xid = Tools.get_xid_by_mac(self.mac)
 
-    def send_dhcp6_pkt(self, pkt, args: dict = None):
+    def send_dhcp6_pkt(self, pkt, args: Namespace = None):
         """
         发送并接收 dhcp6 数据包
         :param pkt:
         :param args:
         :return:
         """
-        if args.get('filter'):
-            filter = args.get('filter')
+        if args.filter:
+            filter = args.filter
         else:
-            filter = args.get('dhcp_server')
-        debug = args.get('debug')
+            filter = args.dhcp_server
+        debug = args.debug
         Tools.print_formart(pkt, debug)
-        t = AsyncSniffer(iface=args.get('iface'), filter=f'port 547 and src host {filter}', count=1,
+        t = AsyncSniffer(iface=args.iface, filter=f'port 547 and src host {filter}', count=1,
                          timeout=self.timeout)
         t.start()
         sleep(10 / 1000)
@@ -51,28 +52,28 @@ class Pkt:
         t.join()
         return t.results
 
-    def send_dhcp4_pkt(self, pkt, args: dict = None):
+    def send_dhcp4_pkt(self, pkt, args: Namespace = None):
         """
         发送并接收 dhcp4 数据包
         :param pkt:
         :param args:
         :return:
         """
-        if args.get('filter'):
-            filter = args.get('filter')
-            debug = args.get('debug')
+        if args.filter:
+            filter = args.filter
+            debug = args.debug
             Tools.print_formart(pkt, debug)
-            t = AsyncSniffer(iface=args.get('iface'), filter=f'port 67 and src host {filter}', count=1,
+            t = AsyncSniffer(iface=args.iface, filter=f'port 67 and src host {filter}', count=1,
                              timeout=self.timeout)
             t.start()
             sleep(10 / 1000)
-            sendp(pkt, verbose=0, iface=args.get('iface'))
+            sendp(pkt, verbose=0, iface=args.iface)
             t.join()
             return t.results
         else:
-            debug = args.get('debug')
+            debug = args.debug
             Tools.print_formart(pkt, debug)
-            res = srp1(pkt, verbose=0, timeout=self.timeout, iface=args.get('iface'))
+            res = srp1(pkt, verbose=0, timeout=self.timeout, iface=args.iface)
             try:
                 assert res
             except Exception as ex:
@@ -84,11 +85,11 @@ class Dhcp6Pkt(Pkt):
 
     def __init__(self, args):
         super(Dhcp6Pkt, self).__init__(args)
-        if args.get('filter'):
+        if args.filter:
             self.ether_ipv6_udp = self.ether / IPv6(src=Tools.get_local_ipv6(), dst='ff02::1:2') / self.udp
         else:
             self.ether_ipv6_udp = self.ether / IPv6(src=Tools.get_local_ipv6(),
-                                                    dst=self.args.get('dhcp_server')) / self.udp
+                                                    dst=self.args.dhcp_server) / self.udp
         self.duid = DUID_LLT(lladdr=self.mac, timeval=self.xid)
         self.solicit = DHCP6_Solicit(trid=xid)
         self.release = DHCP6_Release(trid=xid)
@@ -99,7 +100,7 @@ class Dhcp6Pkt(Pkt):
         self.opt_ia_pd = DHCP6OptIA_PD(iaid=self.xid)
         self.request = DHCP6_Request(trid=xid)
         self.opt_server_id = DHCP6OptServerId()
-        self.relay_forward = DHCP6_RelayForward(linkaddr=self.args.get('relay_forward'))
+        self.relay_forward = DHCP6_RelayForward(linkaddr=self.args.relay_forward)
         self.make_options = Dhcp6Options(self.args)
         self.options_list = self.make_options.make_options_list()
 
@@ -108,14 +109,14 @@ class Dhcp6Pkt(Pkt):
         制作solicit包
         :return:
         """
-        if self.args.get('na_pd') == 'pd':
+        if self.args.pd == 'pd':
             solicit_pkt = self.ether_ipv6_udp / self.solicit / self.opt_client_id / self.opt_ia_pd / self.options_list
-        elif self.args.get('na_pd') == 'na/pd':
+        elif self.args.na_pd == 'na/pd':
             solicit_pkt = self.ether_ipv6_udp / self.solicit / self.opt_client_id / self.opt_ia_na / self.opt_ia_pd / self.options_list
         else:
             solicit_pkt = self.ether_ipv6_udp / self.solicit / self.opt_client_id / self.opt_ia_na / self.options_list
 
-        if self.args.get('relay_forward') is not None:
+        if self.args.relay_forward is not None:
             solicit_pkt = self.dhcp6_relay_for_ward(solicit_pkt[DHCP6_Solicit])
             return solicit_pkt
 
@@ -133,7 +134,7 @@ class Dhcp6Pkt(Pkt):
         opt_client_id = advertise_pkt[DHCP6OptClientId]
         request_pkt = self.ether_ipv6_udp / self.request / opt_client_id / self.options_list
 
-        if self.args.get('relay_forward') is not None:
+        if self.args.relay_forward is not None:
             request_pkt = self.dhcp6_relay_for_ward(request_pkt[DHCP6_Request])
             return request_pkt
         return request_pkt
@@ -152,7 +153,7 @@ class Dhcp6Pkt(Pkt):
         reply_pkt = pkt_result.get('dhcp6_reply').get(timeout=self.timeout)
         opt_client_id = reply_pkt[DHCP6OptClientId]
         renew_pkt = self.ether_ipv6_udp / self.renew / opt_client_id / self.options_list
-        if self.args.get('relay_forward') is not None:
+        if self.args.relay_forward is not None:
             renew_pkt = self.dhcp6_relay_for_ward(renew_pkt[DHCP6_Renew])
             return renew_pkt
         return renew_pkt
@@ -165,7 +166,7 @@ class Dhcp6Pkt(Pkt):
         reply_pkt = pkt_result.get('dhcp6_reply').get(timeout=self.timeout)
         opt_client_id = reply_pkt[DHCP6OptClientId]
         release_pkt = self.ether_ipv6_udp / self.release / opt_client_id / self.options_list
-        if self.args.get('relay_forward') is not None:
+        if self.args.relay_forward is not None:
             release_pkt = self.dhcp6_relay_for_ward(release_pkt[DHCP6_Release])
             return release_pkt
         return release_pkt
@@ -178,7 +179,7 @@ class Dhcp6Pkt(Pkt):
         reply_pkt = pkt_result.get('dhcp6_reply').get(timeout=self.timeout)
         opt_client_id = reply_pkt[DHCP6OptClientId]
         decline_pkt = self.ether_ipv6_udp / self.decline / opt_client_id / self.options_list
-        if self.args.get('relay_forward') is not None:
+        if self.args.relay_forward is not None:
             decline_pkt = self.dhcp6_relay_for_ward(decline_pkt[DHCP6_Decline])
             return decline_pkt
         return decline_pkt
@@ -194,19 +195,18 @@ class Dhcp6Pkt(Pkt):
 
 class Dhcp4Pkt(Pkt):
 
-    def __init__(self, args):
+    def __init__(self, args: Namespace):
         super(Dhcp4Pkt, self).__init__(args)
         self.make_options = Dhcp4Options(self.args)
-        if args.get('filter'):
+        if args.filter:
             self.bootp = BOOTP(chaddr=self.mac, giaddr='0.0.0.0', xid=random.randint(1, 900000000), flags=1)
             self.ether_ip_udp_bootp = Ether(src=str2mac(self.mac), dst='ff:ff:ff:ff:ff:ff') / IP(src='0.0.0.0',
                                                                                                  dst='255.255.255.255') / UDP(
                 sport=67, dport=67) / self.bootp
         else:
-            self.bootp = BOOTP(chaddr=self.mac, giaddr=self.args.get('relay_forward'), xid=random.randint(1, 900000000),
+            self.bootp = BOOTP(chaddr=self.mac, giaddr=self.args.relay_forward, xid=random.randint(1, 900000000),
                                flags=0)
-            self.ether_ip_udp_bootp = Ether() / IP(dst=self.args.get('dhcp_server')) / UDP(sport=67,
-                                                                                           dport=67) / self.bootp
+            self.ether_ip_udp_bootp = Ether() / IP(dst=self.args.dhcp_server) / UDP(sport=67, dport=67) / self.bootp
 
         self.options_list = self.make_options.make_options_list()
 
@@ -247,7 +247,7 @@ class Dhcp4Pkt(Pkt):
         制作 request包
         :return:
         """
-        if self.args.get('single'):
+        if self.args.single:
             options = [('message-type', 'request')]
             for i in self.options_list: options.append(i)
             request_pkt = self.ether_ip_udp_bootp / DHCP(options=options)
