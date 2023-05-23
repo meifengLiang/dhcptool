@@ -5,13 +5,16 @@
 # @Software: PyCharm
 # @desc    :
 import collections
+import functools
 import hashlib
+import inspect
 import json
 import re
 import socket
 import subprocess
 from argparse import Namespace
 from inspect import getmodule, stack
+from typing import Callable, Iterable, Any
 
 from scapy.arch import get_if_hwaddr
 from scapy.layers.dhcp import DHCPTypes, DHCP, BOOTP

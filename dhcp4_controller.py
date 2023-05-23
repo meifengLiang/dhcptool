@@ -30,22 +30,16 @@ class Dhcp4Controller(Dhcp4Pkt):
         for i in range(int(self.args.num)):
             global_var['tag'] = i
             try:
-                if self.args.renew:
-                    self.send_discover_offer_request_ack_renew()
-                elif self.args.release:
-                    self.send_discover_offer_request_ack_release()
-                elif self.args.inform:
-                    self.send_inform() if self.args.single else self.send_discover_offer_request_ack_inform()
-                elif self.args.request:
-                    self.send_request() if self.args.single else logs.info("发送request报文需要额外指定 -single来发送")
-                elif self.args.discover:
-                    self.send_discover()
-                elif self.args.nak:
-                    self.send_discover_offer_request_nak()
-                elif self.args.decline:
-                    self.send_decline() if self.args.single else self.send_discover_offer_request_ack_decline()
-                else:
-                    self.send_discover_offer_request_ack()
+                send_pkts = {
+                    self.args.renew: self.send_discover_offer_request_ack_renew,
+                    self.args.release: self.send_discover_offer_request_ack_release,
+                    self.args.inform: self.send_inform if self.args.single else self.send_discover_offer_request_ack_inform,
+                    self.args.request: self.send_request if self.args.single else logs.info("发送request报文需要额外指定 -single来发送"),
+                    self.args.discover: self.send_discover,
+                    self.args.nak: self.send_discover_offer_request_nak,
+                    self.args.decline: self.send_decline if self.args.single else self.send_discover_offer_request_ack_decline,
+                }
+                send_pkts.get(True, self.send_discover_offer_request_ack)()
             except Empty as ex:
                 logs.info('没有接收到返回包！')
             except AssertionError as ex:
