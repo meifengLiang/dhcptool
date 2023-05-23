@@ -54,8 +54,11 @@ class Tools:
         :return:
         """
         if args.mac is not None:
-            mac = Tools.mac_self_incrementing(args.mac, global_var.get('tag'))
-            mac = mac2str(mac)
+            if args.fixe:
+                mac = mac2str(args.mac)
+            else:
+                mac = Tools.mac_self_incrementing(args.mac, global_var.get('tag'))
+                mac = mac2str(mac)
         else:
             if args.filter and len(args.filter.split('.')) == 4:
                 mac = get_if_hwaddr(args.iface)
