@@ -34,6 +34,7 @@ class Dhcp6Controller(Dhcp6Pkt):
                     self.args.release: self.send_solicit_advertise_request_reply_release,
                     self.args.decline: self.send_solicit_advertise_request_reply_decline,
                 }
+
                 send_pkts.get(True, self.send_solicit_advertise_request_reply)()
             except Empty as ex:
                 logs.info('没有接收到返回包！')
