@@ -29,14 +29,12 @@ class Dhcp6Controller(Dhcp6Pkt):
         for i in range(int(self.args.num)):
             global_var['tag'] = i
             try:
-                if self.args.renew:
-                    self.send_solicit_advertise_request_reply_renew()
-                elif self.args.release:
-                    self.send_solicit_advertise_request_reply_release()
-                elif self.args.decline:
-                    self.send_solicit_advertise_request_reply_decline()
-                else:
-                    self.send_solicit_advertise_request_reply()
+                send_pkts = {
+                    self.args.renew: self.send_solicit_advertise_request_reply_renew,
+                    self.args.release: self.send_solicit_advertise_request_reply_release,
+                    self.args.decline: self.send_solicit_advertise_request_reply_decline,
+                }
+                send_pkts.get(True, self.send_solicit_advertise_request_reply)()
             except Empty as ex:
                 logs.info('没有接收到返回包！')
             except AssertionError as ex:
