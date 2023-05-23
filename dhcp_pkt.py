@@ -250,8 +250,11 @@ class Dhcp4Pkt(Pkt):
         if self.args.single:
             options = [('message-type', 'request')]
             for i in self.options_list: options.append(i)
-            request_pkt = self.ether_ip_udp_bootp / DHCP(options=options)
-            return request_pkt
+            if dict(options[:-1]).get('requested_addr'):
+                request_pkt = self.ether_ip_udp_bootp / DHCP(options=options)
+                return request_pkt
+            else:
+                logs.info("单独request报文不能没有requested_addr，请指定 -o 50=ipv4")
         else:
             offer_pkt = pkt_result.get('dhcp4_offer').get(timeout=self.timeout)
             request_pkt = self.make_pkts(offer_pkt, "request")
@@ -271,9 +274,18 @@ class Dhcp4Pkt(Pkt):
         制作 decline包
         :return:
         """
-        ack_pkt = pkt_result.get('dhcp4_ack').get(timeout=self.timeout)
-        decline_pkt = self.make_pkts(ack_pkt, "decline")
-        return decline_pkt
+        if self.args.single:
+            options = [('message-type', 'decline')]
+            for i in self.options_list: options.append(i)
+            if dict(options[:-1]).get('requested_addr'):
+                decline_pkt = self.ether_ip_udp_bootp / DHCP(options=options)
+                return decline_pkt
+            else:
+                logs.info("单独发送decline报文不能没有requested_addr，请指定 -o 50=ipv4")
+        else:
+            ack_pkt = pkt_result.get('dhcp4_ack').get(timeout=self.timeout)
+            decline_pkt = self.make_pkts(ack_pkt, "decline")
+            return decline_pkt
 
     def dhcp4_release(self):
         """
@@ -289,16 +301,15 @@ class Dhcp4Pkt(Pkt):
         制作 inform包
         :return:
         """
-        ack_pkt = pkt_result.get('dhcp4_ack').get(timeout=self.timeout)
-        inform_pkt = self.make_pkts(ack_pkt, "inform")
-        return inform_pkt
-
-    def dhcp4_custom_inform(self):
-        """
-        制作 inform包
-        :return:
-        """
-        options = [('message-type', 'inform')]
-        for i in self.options_list: options.append(i)
-        inform_pkt = self.ether_ip_udp_bootp / DHCP(options=options)
-        return inform_pkt
+        if self.args.single:
+            options = [('message-type', 'inform')]
+            for i in self.options_list: options.append(i)
+            if dict(options[:-1]).get('requested_addr'):
+                inform_pkt = self.ether_ip_udp_bootp / DHCP(options=options)
+                return inform_pkt
+            else:
+                logs.info("单独发送inform报文不能没有requested_addr，请指定 -o 50=ipv4")
+        else:
+            ack_pkt = pkt_result.get('dhcp4_ack').get(timeout=self.timeout)
+            inform_pkt = self.make_pkts(ack_pkt, "inform")
+            return inform_pkt

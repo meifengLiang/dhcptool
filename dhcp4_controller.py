@@ -37,13 +37,13 @@ class Dhcp4Controller(Dhcp4Pkt):
                 elif self.args.inform:
                     self.send_inform() if self.args.single else self.send_discover_offer_request_ack_inform()
                 elif self.args.request:
-                    self.send_request()
+                    self.send_request() if self.args.single else logs.info("发送request报文需要额外指定 -single来发送")
                 elif self.args.discover:
                     self.send_discover()
                 elif self.args.nak:
                     self.send_discover_offer_request_nak()
                 elif self.args.decline:
-                    self.send_discover_offer_request_ack_decline()
+                    self.send_decline() if self.args.single else self.send_discover_offer_request_ack_decline()
                 else:
                     self.send_discover_offer_request_ack()
             except Empty as ex:
@@ -51,7 +51,7 @@ class Dhcp4Controller(Dhcp4Pkt):
             except AssertionError as ex:
                 logs.info('返回包未包含分配ip！')
             except Exception as ex:
-                logs.info(f"错误: {ex}")
+                logs.info(f"warn: {ex}")
 
             print('-' * 60)
             pkt_result.get('dhcp4_ack').queue.clear()
@@ -131,9 +131,9 @@ class Dhcp4Controller(Dhcp4Pkt):
         ack_pkt = self.send_dhcp4_pkt(inform_pkt, args=self.args)
         Tools.analysis_results(pkts_list=ack_pkt, args=self.args)
 
-    def send_inform(self):
-        inform_pkt = self.dhcp4_custom_inform()
-        res = self.send_dhcp4_pkt(inform_pkt, args=self.args)
+    def send_discover(self):
+        discover_pkt = self.dhcp4_discover()
+        res = self.send_dhcp4_pkt(discover_pkt, args=self.args)
         Tools.analysis_results(pkts_list=res, args=self.args)
 
     def send_request(self):
@@ -141,7 +141,12 @@ class Dhcp4Controller(Dhcp4Pkt):
         res = self.send_dhcp4_pkt(request_pkt, args=self.args)
         Tools.analysis_results(pkts_list=res, args=self.args)
 
-    def send_discover(self):
-        discover_pkt = self.dhcp4_discover()
-        res = self.send_dhcp4_pkt(discover_pkt, args=self.args)
+    def send_inform(self):
+        inform_pkt = self.dhcp4_inform()
+        res = self.send_dhcp4_pkt(inform_pkt, args=self.args)
+        Tools.analysis_results(pkts_list=res, args=self.args)
+
+    def send_decline(self):
+        decline_pkt = self.dhcp4_decline()
+        res = self.send_dhcp4_pkt(decline_pkt, args=self.args)
         Tools.analysis_results(pkts_list=res, args=self.args)

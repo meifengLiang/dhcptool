@@ -116,8 +116,6 @@ class Tools:
         :param filter:
         :return:
         """
-
-
         if args.filter:
             filter = args.filter
         else:
