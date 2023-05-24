@@ -109,10 +109,11 @@ class Dhcp6Pkt(Pkt):
         制作solicit包
         :return:
         """
-        if self.args.pd == 'pd':
-            solicit_pkt = self.ether_ipv6_udp / self.solicit / self.opt_client_id / self.opt_ia_pd / self.options_list
-        elif self.args.na_pd == 'na/pd':
+
+        if self.args.na and self.args.pd:
             solicit_pkt = self.ether_ipv6_udp / self.solicit / self.opt_client_id / self.opt_ia_na / self.opt_ia_pd / self.options_list
+        elif self.args.pd:
+            solicit_pkt = self.ether_ipv6_udp / self.solicit / self.opt_client_id / self.opt_ia_pd / self.options_list
         else:
             solicit_pkt = self.ether_ipv6_udp / self.solicit / self.opt_client_id / self.opt_ia_na / self.options_list
 

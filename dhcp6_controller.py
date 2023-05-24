@@ -42,7 +42,8 @@ class Dhcp6Controller(Dhcp6Pkt):
 
             print('-' * 60)
             pkt_result.get('dhcp6_reply').queue.clear()
-        logs.info(json.dumps(summary_result))
+        str_summary_result = str(summary_result).replace('{', '').replace('}', '').replace("'", '')
+        logs.info(str_summary_result)
 
     def send_solicit_advertise_request_reply(self):
         """

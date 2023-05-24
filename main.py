@@ -19,7 +19,7 @@ def parse_cmd_args_common(subparsers):
     :return: 
     """
     subparsers.add_argument("--dhcp_server", "-s", help="dhcptool [v4|v6] -s [ipv4|ipv6]")
-    subparsers.add_argument("--relay_forward", "-rf", type=str, default=Tools.get_local_ipv4(),
+    subparsers.add_argument("--relay_forward", "-rf", type=str, default=Tools.get_local_ipv4() if "v4" in subparsers.prog else Tools.get_local_ipv6(),
                             help='dhcptool [v4|v6] -f [ipv4|ipv6] -rf [ipv4|ipv6]')
     subparsers.add_argument("--iface", "-i", default='eth0', help='dhcptool [v4|v6] -s [ipv4|ipv6] -i eth1')
     subparsers.add_argument("--single", "-single", action='store_true',
@@ -58,7 +58,6 @@ def parse_cmd_args_dhcp6():
                               help='指定ipv6源ip 例: dhcptool v6 -f ipv6 -src ipv6')
     subparsers_6.add_argument("--na", "-na", action='store_true', help='dhcptool v6 -f ipv6 -na')
     subparsers_6.add_argument("--pd", "-pd", action='store_true', help='dhcptool v6 -f ipv6 -pd')
-    subparsers_6.add_argument("--np", "-np", action='store_true', help='dhcptool v6 -f ipv6 -np')
 
 
 def exec_dhcp4(args):

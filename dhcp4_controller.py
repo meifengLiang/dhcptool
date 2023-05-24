@@ -34,7 +34,8 @@ class Dhcp4Controller(Dhcp4Pkt):
                     self.args.renew: self.send_discover_offer_request_ack_renew,
                     self.args.release: self.send_discover_offer_request_ack_release,
                     self.args.inform: self.send_inform if self.args.single else self.send_discover_offer_request_ack_inform,
-                    self.args.request: self.send_request if self.args.single else logs.info("发送request报文需要额外指定 -single来发送"),
+                    self.args.request: self.send_request if self.args.single else logs.info(
+                        "发送request报文需要额外指定 -single来发送"),
                     self.args.discover: self.send_discover,
                     self.args.nak: self.send_discover_offer_request_nak,
                     self.args.decline: self.send_decline if self.args.single else self.send_discover_offer_request_ack_decline,
@@ -49,7 +50,8 @@ class Dhcp4Controller(Dhcp4Pkt):
 
             print('-' * 60)
             pkt_result.get('dhcp4_ack').queue.clear()
-        logs.info(json.dumps(summary_result))
+        str_summary_result = str(summary_result).replace('{', '').replace('}', '').replace("'", '')
+        logs.info(str_summary_result)
 
     def send_discover_offer_request_ack(self):
         """
