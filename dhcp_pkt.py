@@ -45,6 +45,7 @@ class Pkt:
             filter = args.dhcp_server
         else:
             logs.info("v6发包需要指定IPv6服务器")
+            filter = 'ff02::1:2'
         debug = args.debug
         Tools.print_formart(pkt, debug)
         t = AsyncSniffer(iface=args.iface, filter=f'port 547 and src host {filter}', count=1,
