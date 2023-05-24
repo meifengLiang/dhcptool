@@ -5,6 +5,7 @@
 # @Software: PyCharm
 # @desc    : dhcp 命令行接受，本工具为循环发包，未考虑实现并发
 import argparse
+from ipaddress import ip_address
 
 from dhcp4_controller import Dhcp4Controller
 from env_args import logs, global_var
@@ -19,7 +20,8 @@ def parse_cmd_args_common(subparsers):
     :return: 
     """
     subparsers.add_argument("--dhcp_server", "-s", help="dhcptool [v4|v6] -s [ipv4|ipv6]")
-    subparsers.add_argument("--relay_forward", "-rf", type=str, default=Tools.get_local_ipv4() if "v4" in subparsers.prog else Tools.get_local_ipv6(),
+    subparsers.add_argument("--relay_forward", "-rf", type=str,
+                            default=Tools.get_local_ipv4() if "v4" in subparsers.prog else Tools.get_local_ipv6(),
                             help='dhcptool [v4|v6] -f [ipv4|ipv6] -rf [ipv4|ipv6]')
     subparsers.add_argument("--iface", "-i", default='eth0', help='dhcptool [v4|v6] -s [ipv4|ipv6] -i eth1')
     subparsers.add_argument("--single", "-single", action='store_true',
@@ -37,7 +39,8 @@ def parse_cmd_args_common(subparsers):
     subparsers.add_argument("--num", "-n", type=int, default=1, help="发送报文数量")
     subparsers.add_argument("--fixe", "-fixe", action='store_true', help="固定mac值进行发包")
     subparsers.add_argument("--sleep_time", "-st", type=int, default=0, help='发包过程中等待时间')
-    subparsers.add_argument("--options", "-o", default=None, help='dhcptool [v4|v6] -f [ipv4|ipv6] -o [code]=[value]&[code]=[value] [dhcptool v4 -s 192.168.31.134 -o [16=1f3……&14=''][18="eth 2/1/4:114.14 ZTEOLT001/1/1/5/0/1/000000000000001111111154 XE"][60=60:000023493534453……][6=12,7][50=192.168.31.199]')
+    subparsers.add_argument("--options", "-o", default=None,
+                            help='dhcptool [v4|v6] -f [ipv4|ipv6] -o [code]=[value]&[code]=[value] [dhcptool v4 -s 192.168.31.134 -o [16=1f3……&14=''][18="eth 2/1/4:114.14 ZTEOLT001/1/1/5/0/1/000000000000001111111154 XE"][60=60:000023493534453……][6=12,7][50=192.168.31.199]')
 
 
 def parse_cmd_args_dhcp4():
@@ -66,8 +69,10 @@ def exec_dhcp4(args):
     :param args:
     :return:
     """
+
     dhcp4_controller = Dhcp4Controller(args)
     dhcp4_controller.run()
+
 
 
 def exec_dhcp6(args):
@@ -99,7 +104,8 @@ def dhcp_main():
     """
     args = parser.parse_args()
     args_dict = vars(args)
-    logs.info(f"解析命令行:\t{args_dict}")
+    str_args_dict = str(args_dict).replace('{', '').replace('}', '').replace("'", '')
+    logs.info(f"args: {str_args_dict}")
     global_var.update(args_dict)
     # 开启执行
     args.func(args)
