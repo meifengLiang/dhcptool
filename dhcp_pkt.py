@@ -6,6 +6,7 @@
 # @desc    :
 import random
 from argparse import Namespace
+from ipaddress import ip_address
 from time import sleep
 from scapy.layers.dhcp import BOOTP, DHCP
 from scapy.layers.dhcp6 import DHCP6_Solicit, DHCP6_Release, DHCP6OptClientId, DHCP6OptIA_NA, DHCP6OptIA_PD, \
@@ -38,10 +39,12 @@ class Pkt:
         :param args:
         :return:
         """
-        if args.filter:
+        if args.filter and ip_address(args.filter).version == 6:
             filter = args.filter
-        else:
+        elif args.dhcp_server and ip_address(args.dhcp_server).version == 6:
             filter = args.dhcp_server
+        else:
+            logs.info("v6发包需要指定IPv6服务器")
         debug = args.debug
         Tools.print_formart(pkt, debug)
         t = AsyncSniffer(iface=args.iface, filter=f'port 547 and src host {filter}', count=1,
@@ -59,7 +62,7 @@ class Pkt:
         :param args:
         :return:
         """
-        if args.filter:
+        if args.filter and ip_address(args.filter).version == 4:
             filter = args.filter
             debug = args.debug
             Tools.print_formart(pkt, debug)
@@ -70,7 +73,7 @@ class Pkt:
             sendp(pkt, verbose=0, iface=args.iface)
             t.join()
             return t.results
-        else:
+        elif args.dhcp_server and ip_address(args.dhcp_server).version == 4:
             debug = args.debug
             Tools.print_formart(pkt, debug)
             res = srp1(pkt, verbose=0, timeout=self.timeout, iface=args.iface)
@@ -79,6 +82,8 @@ class Pkt:
             except Exception as ex:
                 logs.error('没有接收到返回包！')
             return res
+        else:
+            logs.info("v4发包需要指定IPv4服务器")
 
 
 class Dhcp6Pkt(Pkt):
