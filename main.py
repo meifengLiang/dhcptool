@@ -69,10 +69,8 @@ def exec_dhcp4(args):
     :param args:
     :return:
     """
-
     dhcp4_controller = Dhcp4Controller(args)
     dhcp4_controller.run()
-
 
 
 def exec_dhcp6(args):
