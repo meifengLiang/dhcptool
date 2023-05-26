@@ -5,6 +5,7 @@
 # @Software: PyCharm
 # @desc    : dhcp 命令行接受，本工具为循环发包，未考虑实现并发
 import argparse
+import os
 from ipaddress import ip_address
 
 from dhcp4_controller import Dhcp4Controller
@@ -100,13 +101,22 @@ def dhcp_main():
     dhcp执行函数入口
     :return:  v6 -s 1000:0:0:31::11 -n 5
     """
+
     args = parser.parse_args()
     args_dict = vars(args)
-    str_args_dict = str(args_dict).replace('{', '').replace('}', '').replace("'", '')
-    logs.info(f"args: {str_args_dict}")
-    global_var.update(args_dict)
-    # 开启执行
-    args.func(args)
+    if args_dict:
+        str_args_dict = str(args_dict).replace('{', '').replace('}', '').replace("'", '')
+        logs.info(f"args: {str_args_dict}")
+        global_var.update(args_dict)
+        # 开启执行
+        args.func(args)
+    else:
+        while True:
+            argv_cmd = input('dhcptool:\t')
+            argv_list = argv_cmd.split(' ')
+            args = parser.parse_args(argv_list)
+            # 开启执行
+            args.func(args)
 
 
 if __name__ == '__main__':
