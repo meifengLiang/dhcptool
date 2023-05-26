@@ -123,7 +123,7 @@ class Dhcp6Pkt(Pkt):
         else:
             solicit_pkt = self.ether_ipv6_udp / self.solicit / self.opt_client_id / self.opt_ia_na / self.options_list
 
-        if self.args.relay_forward is not None:
+        if self.args.dhcp_server:
             solicit_pkt = self.dhcp6_relay_for_ward(solicit_pkt[DHCP6_Solicit])
             return solicit_pkt
 
