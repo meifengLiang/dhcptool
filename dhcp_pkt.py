@@ -160,7 +160,7 @@ class Dhcp6Pkt(Pkt):
         reply_pkt = pkt_result.get('dhcp6_reply').get(timeout=self.timeout)
         opt_client_id = reply_pkt[DHCP6OptClientId]
         renew_pkt = self.ether_ipv6_udp / self.renew / opt_client_id / self.options_list
-        if self.args.relay_forward is not None:
+        if self.args.dhcp_server:
             renew_pkt = self.dhcp6_relay_for_ward(renew_pkt[DHCP6_Renew])
             return renew_pkt
         return renew_pkt
@@ -173,7 +173,7 @@ class Dhcp6Pkt(Pkt):
         reply_pkt = pkt_result.get('dhcp6_reply').get(timeout=self.timeout)
         opt_client_id = reply_pkt[DHCP6OptClientId]
         release_pkt = self.ether_ipv6_udp / self.release / opt_client_id / self.options_list
-        if self.args.relay_forward is not None:
+        if self.args.dhcp_server:
             release_pkt = self.dhcp6_relay_for_ward(release_pkt[DHCP6_Release])
             return release_pkt
         return release_pkt
@@ -186,7 +186,7 @@ class Dhcp6Pkt(Pkt):
         reply_pkt = pkt_result.get('dhcp6_reply').get(timeout=self.timeout)
         opt_client_id = reply_pkt[DHCP6OptClientId]
         decline_pkt = self.ether_ipv6_udp / self.decline / opt_client_id / self.options_list
-        if self.args.relay_forward is not None:
+        if self.args.dhcp_server:
             decline_pkt = self.dhcp6_relay_for_ward(decline_pkt[DHCP6_Decline])
             return decline_pkt
         return decline_pkt
