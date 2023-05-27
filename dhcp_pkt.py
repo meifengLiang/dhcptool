@@ -141,7 +141,7 @@ class Dhcp6Pkt(Pkt):
         opt_client_id = advertise_pkt[DHCP6OptClientId]
         request_pkt = self.ether_ipv6_udp / self.request / opt_client_id / self.options_list
 
-        if self.args.relay_forward is not None:
+        if self.args.dhcp_server:
             request_pkt = self.dhcp6_relay_for_ward(request_pkt[DHCP6_Request])
             return request_pkt
         return request_pkt
