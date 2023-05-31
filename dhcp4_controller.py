@@ -31,7 +31,7 @@ class Dhcp4Controller(Dhcp4Pkt):
             global_var['tag'] = i
             try:
                 send_pkts = {
-                    self.args.renew: self.send_discover_offer_request_ack_renew,
+                    self.args.renew: self.send_request if self.args.single else self.send_discover_offer_request_ack_renew,
                     self.args.release: self.send_release if self.args.single else self.send_discover_offer_request_ack_release,
                     self.args.inform: self.send_inform if self.args.single else self.send_discover_offer_request_ack_inform,
                     self.args.request: self.send_request if self.args.single else None,

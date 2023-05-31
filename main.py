@@ -101,7 +101,6 @@ def dhcp_main():
     dhcp执行函数入口
     :return:  v6 -s 1000:0:0:31::11 -n 5
     """
-
     args = parser.parse_args()
     args_dict = vars(args)
     if args_dict:
