@@ -19,11 +19,8 @@ class Logings(logging.Logger):
         # 继承logging模块中的Logger类，因为里面实现了各种各样的方法，很全面，但是初始化很简单
         # 所以我们需要继承后把初始化再优化下，变成自己想要的。
         super().__init__(name, level)
-
         # 设置日志格式
-        fmt = "%(asctime)s | %(message)s"
-        formatter = logging.Formatter(fmt)
-
+        formatter = logging.Formatter("%(asctime)s,%(msecs)03d | %(message)s", datefmt="%H:%M:%S")
         # 文件输出渠道
         if file:
             handle2 = logging.FileHandler(file, encoding="utf-8")

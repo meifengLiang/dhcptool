@@ -210,10 +210,10 @@ class Tools:
                 response_dict.update({"yiaddr": yiaddr})
             mac = str2mac(global_var.get('generate_mac')) or ''
             if response_dict.get('yiaddr'):
-                content_format = "{:<} | v4: {:<15} | {:<}".format(
+                content_format = "v4 | {:<} | {:<15} | {:<}".format(
                     mac, response_dict.get('yiaddr') or '', response_dict.get('info') or '')
             else:
-                content_format = "{:<} | v6: {:<15} | prefix: {:<} | {:<}".format(
+                content_format = "v6 | {:<} | NA: {:<15} | PD: {:<} | {:<}".format(
                     mac, response_dict.get('addr') or '', response_dict.get('prefix') or '',
                          response_dict.get('info') or '')
             logs.info(content_format)
