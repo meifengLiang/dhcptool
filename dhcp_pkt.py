@@ -299,9 +299,18 @@ class Dhcp4Pkt(Pkt):
         制作 release包
         :return:
         """
-        ack_pkt = pkt_result.get('dhcp4_ack').get(timeout=self.timeout)
-        release_pkt = self.make_pkts(ack_pkt, "release")
-        return release_pkt
+        if self.args.single:
+            options = [('message-type', 'release')]
+            for i in self.options_list: options.append(i)
+            if dict(options[:-1]).get('requested_addr'):
+                decline_pkt = self.ether_ip_udp_bootp / DHCP(options=options)
+                return decline_pkt
+            else:
+                logs.info("单独发送release报文不能没有requested_addr，请指定 -o 50=ipv4")
+        else:
+            ack_pkt = pkt_result.get('dhcp4_ack').get(timeout=self.timeout)
+            release_pkt = self.make_pkts(ack_pkt, "release")
+            return release_pkt
 
     def dhcp4_inform(self):
         """

@@ -32,7 +32,7 @@ class Dhcp4Controller(Dhcp4Pkt):
             try:
                 send_pkts = {
                     self.args.renew: self.send_discover_offer_request_ack_renew,
-                    self.args.release: self.send_discover_offer_request_ack_release,
+                    self.args.release: self.send_release if self.args.single else self.send_discover_offer_request_ack_release,
                     self.args.inform: self.send_inform if self.args.single else self.send_discover_offer_request_ack_inform,
                     self.args.request: self.send_request if self.args.single else None,
                     self.args.discover: self.send_discover,
@@ -144,4 +144,9 @@ class Dhcp4Controller(Dhcp4Pkt):
     def send_decline(self):
         decline_pkt = self.dhcp4_decline()
         res = self.send_dhcp4_pkt(decline_pkt, args=self.args)
+        Tools.analysis_results(pkts_list=res, args=self.args)
+
+    def send_release(self):
+        release_pkt = self.dhcp4_release()
+        res = self.send_dhcp4_pkt(release_pkt, args=self.args)
         Tools.analysis_results(pkts_list=res, args=self.args)
