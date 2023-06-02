@@ -28,12 +28,8 @@ def parse_cmd_args_common(subparsers):
     subparsers.add_argument("--single", "-single", action='store_true',
                             help='dhcptool [v4|v6] -s [ipv4|ipv6] -mt inform -single -o 50=[ipv4]')
     subparsers.add_argument("--renew", "-renew", action='store_true', help='dhcptool [v4|v6] -f [ipv4|ipv6] -renew')
-    subparsers.add_argument("--discover", "-discover", action='store_true', help='发起discover请求')
-    subparsers.add_argument("--request", "-request", action='store_true', help='发起request请求')
     subparsers.add_argument("--release", "-release", action='store_true', help='发起release请求')
     subparsers.add_argument("--decline", "-decline", action='store_true', help='发起decline请求')
-    subparsers.add_argument("--inform", "-inform", action='store_true', help='发起inform请求')
-    subparsers.add_argument("--nak", "-nak", action='store_true', help='模拟异常报文以返回nak响应报文')
     subparsers.add_argument("--filter", "-f", default=None, help='使用广播发包,用来过滤监听的返回结果')
     subparsers.add_argument("--mac", "-mac", default=None, help='指定用户mac')
     subparsers.add_argument("--debug", "-debug", action='store_true', help='debug模式，能查看更详细的报文内容')
@@ -50,6 +46,10 @@ def parse_cmd_args_dhcp4():
     :return:
     """
     parse_cmd_args_common(subparsers_4)
+    subparsers_4.add_argument("--discover", "-discover", action='store_true', help='发起discover请求')
+    subparsers_4.add_argument("--request", "-request", action='store_true', help='发起request请求')
+    subparsers_4.add_argument("--inform", "-inform", action='store_true', help='发起inform请求')
+    subparsers_4.add_argument("--nak", "-nak", action='store_true', help='模拟异常报文以返回nak响应报文')
 
 
 def parse_cmd_args_dhcp6():
