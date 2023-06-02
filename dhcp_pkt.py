@@ -92,10 +92,13 @@ class Dhcp6Pkt(Pkt):
     def __init__(self, args):
         super(Dhcp6Pkt, self).__init__(args)
         if args.filter:
-            self.ether_ipv6_udp = self.ether / IPv6(src=Tools.get_local_ipv6(), dst='ff02::1:2') / self.udp
+            self.ether_ipv6_udp = self.ether \
+                                  / IPv6(src=Tools.get_local_ipv6(), dst='ff02::1:2') \
+                                  / self.udp
         else:
-            self.ether_ipv6_udp = self.ether / IPv6(src=Tools.get_local_ipv6(),
-                                                    dst=self.args.dhcp_server) / self.udp
+            self.ether_ipv6_udp = self.ether \
+                                  / IPv6(src=Tools.get_local_ipv6(), dst=self.args.dhcp_server) \
+                                  / self.udp
         self.duid = DUID_LLT(lladdr=self.mac, timeval=self.xid)
         self.solicit = DHCP6_Solicit(trid=xid)
         self.release = DHCP6_Release(trid=xid)
@@ -206,14 +209,23 @@ class Dhcp4Pkt(Pkt):
         super(Dhcp4Pkt, self).__init__(args)
         self.make_options = Dhcp4Options(self.args)
         if args.filter:
-            self.bootp = BOOTP(chaddr=self.mac, giaddr='0.0.0.0', xid=random.randint(1, 900000000), flags=1)
-            self.ether_ip_udp_bootp = Ether(src=str2mac(self.mac), dst='ff:ff:ff:ff:ff:ff') / IP(src='0.0.0.0',
-                                                                                                 dst='255.255.255.255') / UDP(
-                sport=67, dport=67) / self.bootp
+            self.bootp = BOOTP(chaddr=self.mac,
+                               giaddr='0.0.0.0',
+                               xid=random.randint(1, 900000000),
+                               flags=1)
+            self.ether_ip_udp_bootp = Ether(src=str2mac(self.mac), dst='ff:ff:ff:ff:ff:ff') \
+                                      / IP(src='0.0.0.0', dst='255.255.255.255') \
+                                      / UDP(sport=67, dport=67) \
+                                      / self.bootp
         else:
-            self.bootp = BOOTP(chaddr=self.mac, giaddr=self.args.relay_forward, xid=random.randint(1, 900000000),
+            self.bootp = BOOTP(chaddr=self.mac,
+                               giaddr=self.args.relay_forward,
+                               xid=random.randint(1, 900000000),
                                flags=0)
-            self.ether_ip_udp_bootp = Ether() / IP(dst=self.args.dhcp_server) / UDP(sport=67, dport=67) / self.bootp
+            self.ether_ip_udp_bootp = Ether() \
+                                      / IP(dst=self.args.dhcp_server) \
+                                      / UDP(sport=67, dport=67) \
+                                      / self.bootp
 
         self.options_list = self.make_options.make_options_list()
 
