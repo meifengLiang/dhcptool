@@ -5,8 +5,8 @@
 # @Software: PyCharm
 # @desc    : dhcp 命令行接受，本工具为循环发包，未考虑实现并发
 import argparse
-import os
-from ipaddress import ip_address
+
+from scapy.interfaces import get_working_if
 
 from dhcp4_controller import Dhcp4Controller
 from env_args import logs, global_var
@@ -24,7 +24,7 @@ def parse_cmd_args_common(subparsers):
     subparsers.add_argument("--relay_forward", "-rf", type=str,
                             default=Tools.get_local_ipv4() if "v4" in subparsers.prog else Tools.get_local_ipv6(),
                             help='dhcptool [v4|v6] -f [ipv4|ipv6] -rf [ipv4|ipv6]')
-    subparsers.add_argument("--iface", "-i", default='eth0', help='dhcptool [v4|v6] -s [ipv4|ipv6] -i eth1')
+    subparsers.add_argument("--iface", "-i", default=get_working_if().name, help='dhcptool [v4|v6] -s [ipv4|ipv6] -i eth1')
     subparsers.add_argument("--single", "-single", action='store_true',
                             help='dhcptool [v4|v6] -s [ipv4|ipv6] -mt inform -single -o 50=[ipv4]')
     subparsers.add_argument("--renew", "-renew", action='store_true', help='dhcptool [v4|v6] -f [ipv4|ipv6] -renew')
