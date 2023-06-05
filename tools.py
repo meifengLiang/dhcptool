@@ -206,8 +206,7 @@ class Tools:
                             pass
             else:
                 yiaddr = pkt[BOOTP].yiaddr
-                options = [i for i in pkt[DHCP].options if len(i) == 2]
-                options = dict(options)
+                options = dict([i for i in pkt[DHCP].options if len(i) == 2])
                 lease_time = options.get('lease_time')
                 response_dict.update({"yiaddr": yiaddr})
             mac = str2mac(global_var.get('generate_mac')) or ''
