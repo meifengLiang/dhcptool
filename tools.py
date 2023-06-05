@@ -101,7 +101,6 @@ class Tools:
         local_ipv4.connect(('8.8.8.8', 80))
         local_ipv4 = local_ipv4.getsockname()[0]
 
-
         return local_ipv4
 
     @staticmethod
@@ -207,13 +206,14 @@ class Tools:
                             pass
             else:
                 yiaddr = pkt[BOOTP].yiaddr
-                options = dict(pkt[DHCP].options[:-2])
+                options = [i for i in pkt[DHCP].options if len(i) == 2]
+                options = dict(options)
                 lease_time = options.get('lease_time')
                 response_dict.update({"yiaddr": yiaddr})
             mac = str2mac(global_var.get('generate_mac')) or ''
             if response_dict.get('yiaddr'):
                 content_format = "v4 | {:<} | {:<15} | {:<}".format(
-                    mac, response_dict.get('yiaddr') or '',  response_dict.get('info') or '')
+                    mac, response_dict.get('yiaddr') or '', response_dict.get('info') or '')
             else:
                 content_format = "v6 | {:<} | NA: {:<15} | PD: {:<} | {:<}".format(
                     mac, response_dict.get('addr') or '', response_dict.get('prefix') or '',
