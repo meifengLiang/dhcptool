@@ -74,11 +74,13 @@ class Dhcp4Options(Options):
         :param value:
         :return:
         ./dhcptool v4 -s 192.168.31.134 -o 60=$(radtools passwd mf@liang admin123)
-        TODO: 除了上面的方式,还需要兼容字符串格式的option60
         """
-        hex = value.encode("utf-8")
-        value = binascii.unhexlify(hex)
-        return 'vendor_class_id', value
+        try:
+            hex = value.encode("utf-8")
+            value = binascii.unhexlify(hex)
+            return 'vendor_class_id', value
+        except:
+            return 'vendor_class_id', value
 
     def option_82(self, value='', suboption_index='01'):
         try:
