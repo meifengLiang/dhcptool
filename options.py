@@ -70,7 +70,7 @@ class Dhcp4Options(Options):
 
     def option_60(self, value=''):
         """
-
+        拼接option60的函数
         :param value:
         :return:
         ./dhcptool v4 -s 192.168.31.134 -o 60=$(radtools passwd mf@liang admin123)
